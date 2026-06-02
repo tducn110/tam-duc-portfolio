@@ -54,15 +54,7 @@ export function CTASection() {
                   <SplitText variant="interactive" duration={0.8} stagger={0.035}>
                     Want to see what I&apos;m
                   </SplitText>{" "}
-                  <span
-                    className="bg-clip-text text-transparent inline-block"
-                    style={{
-                      fontFamily: fonts.display,
-                      fontStyle: "italic",
-                      fontWeight: 400,
-                      backgroundImage: "linear-gradient(90deg, #af50ff 0%, #f7f9fa 100%)",
-                    }}
-                  >
+                  <span className="text-[#af50ff] drop-shadow-[0_0_15px_rgba(175,80,255,0.45)] inline-block">
                     <SplitText variant="interactive" duration={0.8} stagger={0.035} delay={0.2}>
                       building next?
                     </SplitText>
