@@ -1,0 +1,83 @@
+import React from "react";
+import { Zap, Layers, Sparkles } from "lucide-react";
+import type { PricingTier, PricingAddon } from "../types";
+
+export const pricingTiers: PricingTier[] = [
+  {
+    id: "basic",
+    name: "Basic",
+    tagline: "Template when you need speed.",
+    price: "500k – 1tr",
+    priceNote: "VND · trọn gói",
+    timeline: "1–3 ngày",
+    audience: "Cá nhân, CLB, tiệm nhỏ, sự kiện nhỏ",
+    includes: [
+      "1 template có sẵn",
+      "3–5 trang cơ bản",
+      "Responsive mobile",
+      "Điền nội dung khách gửi",
+      "Form liên hệ cơ bản",
+      "Deploy lên Vercel/Netlify",
+      "1–2 lần chỉnh sửa nhỏ",
+    ],
+    excludes: ["Thiết kế riêng", "CMS / admin", "Database / logic phức tạp"],
+    ctaLabel: "Chọn gói Basic",
+    color: "steel",
+    icon: React.createElement(Zap, { size: 16 }),
+  },
+  {
+    id: "standard",
+    name: "Standard",
+    tagline: "Custom when you need fit.",
+    price: "2.500.000đ",
+    priceNote: "VND · trọn gói",
+    timeline: "3–7 ngày",
+    audience: "Shop nhỏ, dự án sinh viên, landing page bán hàng",
+    includes: [
+      "Tư vấn yêu cầu + sitemap",
+      "Prototype / layout demo",
+      "Code giao diện theo nhu cầu",
+      "3–5 trang, responsive",
+      "Form contact / apply",
+      "Tối ưu tốc độ + SEO cơ bản",
+      "3–5 vòng chỉnh sửa trong scope",
+      "Deploy production",
+    ],
+    ctaLabel: "Chọn gói Standard",
+    color: "violet",
+    icon: React.createElement(Layers, { size: 16 }),
+    recommended: true,
+  },
+  {
+    id: "premium",
+    name: "Premium",
+    tagline: "System when you need growth.",
+    price: "5tr – 10tr+",
+    priceNote: "VND · báo giá theo scope",
+    timeline: "7–21 ngày",
+    audience: "Dự án cần CMS, CRM, form, email, dashboard",
+    includes: [
+      "Discovery + phân tích nghiệp vụ",
+      "Wireframe + prototype",
+      "UI design theo brand",
+      "Frontend + backend / API",
+      "Database + CMS quản lý nội dung",
+      "CRM mini cho khách apply",
+      "Email notification (Resend)",
+      "Admin dashboard + auth",
+      "Bảo hành kỹ thuật 14–30 ngày",
+    ],
+    ctaLabel: "Yêu cầu báo giá",
+    color: "mauve",
+    icon: React.createElement(Sparkles, { size: 16 }),
+  },
+];
+
+export const pricingAddons: PricingAddon[] = [
+  { label: "Thêm trang", price: "+200k – 500k / trang" },
+  { label: "Form nâng cao", price: "+300k – 800k" },
+  { label: "CMS quản lý nội dung", price: "+1tr – 3tr" },
+  { label: "Email notification", price: "+500k – 1tr" },
+  { label: "Dashboard admin", price: "+2tr+" },
+  { label: "Đa ngôn ngữ", price: "+1tr+" },
+];
