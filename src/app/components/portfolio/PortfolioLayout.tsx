@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, Suspense, lazy } from "react";
+import React, { useEffect, useRef, Suspense, lazy, useState } from "react";
 import { fonts } from "@/shared/lib/tokens";
 import { CursorHalo } from "../../hooks/useCursorHalo";
 import { NavBar } from "./NavBar";
