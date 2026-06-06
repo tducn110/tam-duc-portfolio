@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import type { Database } from "@/shared/lib/supabase.types";
+import type { Database } from "../../shared/lib/supabase.types";
 
 const supabaseUrl = (typeof process !== "undefined" ? process.env.VITE_SUPABASE_URL : undefined)
   || import.meta.env.VITE_SUPABASE_URL;

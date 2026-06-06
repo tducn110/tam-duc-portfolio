@@ -1,4 +1,4 @@
-import type { ContactLead } from "@/features/contact/types";
+import type { ContactLead } from "../../features/contact/types";
 import type { EmailService } from "./email.service";
 
 export class MockEmailService implements EmailService {

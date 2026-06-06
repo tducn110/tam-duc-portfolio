@@ -1,5 +1,5 @@
 import { Resend } from "resend";
-import type { ContactLead } from "@/features/contact/types";
+import type { ContactLead } from "../../features/contact/types";
 import type { EmailService } from "./email.service";
 
 const SERVICE_LABELS: Record<ContactLead["serviceType"], string> = {

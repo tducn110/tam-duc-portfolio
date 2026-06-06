@@ -1,6 +1,6 @@
-import type { ContactLead } from "@/domain/contact/contact.types";
-import type { ContactCreateInput } from "@/domain/contact/contact.schema";
-import type { CustomerRepository } from "@/domain/contact/contact.repository";
+import type { ContactLead } from "../../domain/contact/contact.types";
+import type { ContactCreateInput } from "../../domain/contact/contact.schema";
+import type { CustomerRepository } from "../../domain/contact/contact.repository";
 
 export class MemoryCustomerRepository implements CustomerRepository {
   // Instance-level store — each new() gets its own isolated array.

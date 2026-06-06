@@ -1,5 +1,5 @@
-import type { ContactService } from "@/domain/contact/contact.service";
-import { contactCreateSchema } from "@/domain/contact/contact.schema";
+import type { ContactService } from "../../domain/contact/contact.service";
+import { contactCreateSchema } from "../../domain/contact/contact.schema";
 
 export class ContactRoutes {
   constructor(private contactService: ContactService) {}

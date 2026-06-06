@@ -1,8 +1,8 @@
-import { supabase } from "@/shared/lib/supabase";
-import type { ContactLead } from "@/domain/contact/contact.types";
-import type { ContactCreateInput } from "@/domain/contact/contact.schema";
-import type { CustomerRepository } from "@/domain/contact/contact.repository";
-import { rowToLead, type SupabaseLeadRow } from "@/domain/contact/contact.mapper";
+import { supabase } from "../../shared/lib/supabase";
+import type { ContactLead } from "../../domain/contact/contact.types";
+import type { ContactCreateInput } from "../../domain/contact/contact.schema";
+import type { CustomerRepository } from "../../domain/contact/contact.repository";
+import { rowToLead, type SupabaseLeadRow } from "../../domain/contact/contact.mapper";
 
 export class SupabaseCustomerRepository implements CustomerRepository {
   private supabaseClient: any;
