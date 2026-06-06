@@ -1,8 +1,9 @@
 import React, { useState } from "react";
 import { useCreateContact } from "../hooks/useCreateContact";
-import { contactCreateSchema, type ContactCreateInput } from "../schemas/contact.schema";
-import { Input, Textarea, Select, FormItem, Button, Card } from "@/shared/ui";
+import { contactCreateSchema, type ContactCreateInput } from "@/domain/contact/contact.schema";
+import { Input, Textarea, Select, FormItem, Button, Card, Typography } from "@/shared/ui";
 import { CheckCircle2, AlertCircle } from "lucide-react";
+import { contactFormContent } from "@/app/data/contactForm";
 
 export function ContactForm() {
   const { submit, loading, error, success } = useCreateContact();
@@ -12,7 +13,8 @@ export function ContactForm() {
     phone: "",
     serviceType: "standard",
     budget: "",
-    message: ""
+    message: "",
+    website: ""
   });
   const [fieldErrors, setFieldErrors] = useState<Partial<Record<keyof ContactCreateInput, string>>>({});
 
@@ -52,23 +54,35 @@ export function ContactForm() {
   if (success) {
     return (
       <Card variant="cosmic" className="p-8 text-center max-w-xl mx-auto flex flex-col items-center justify-center min-h-[300px]">
-        <CheckCircle2 size={48} className="text-[#af50ff] mb-4 animate-bounce" />
-        <h3 className="text-2xl font-bold mb-2">Thank you!</h3>
-        <p className="text-[#f0f0f0]/70 max-w-md">
-          Your request was received successfully. I will review it and reply as soon as possible.
-        </p>
+        <CheckCircle2 size={48} className="text-violet mb-4 animate-bounce" />
+        <Typography as="h3" variant="subheading" className="text-2xl font-bold mb-2">{contactFormContent.successTitle}</Typography>
+        <Typography variant="body" color="ghost" className="opacity-70 max-w-md">
+          {contactFormContent.successDesc}
+        </Typography>
       </Card>
     );
   }
 
   return (
     <Card variant="frost" className="p-6 md:p-8 max-w-xl mx-auto">
-      <form onSubmit={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5" noValidate>
+        {/* Honeypot field - completely hidden from human users */}
+        <input
+          type="text"
+          name="website"
+          value={formValues.website || ""}
+          onChange={handleChange}
+          tabIndex={-1}
+          autoComplete="off"
+          style={{ display: "none" }}
+          aria-hidden="true"
+        />
+
         <div className="grid md:grid-cols-2 gap-5">
-          <FormItem label="Name" error={fieldErrors.name}>
+          <FormItem label={contactFormContent.labelName} error={fieldErrors.name}>
             <Input
               name="name"
-              placeholder="Nguyen Tam Duc"
+              placeholder={contactFormContent.placeholderName}
               value={formValues.name}
               onChange={handleChange}
               disabled={loading}
@@ -76,11 +90,11 @@ export function ContactForm() {
             />
           </FormItem>
 
-          <FormItem label="Email" error={fieldErrors.email}>
+          <FormItem label={contactFormContent.labelEmail} error={fieldErrors.email}>
             <Input
               name="email"
               type="email"
-              placeholder="contact@tamduc.dev"
+              placeholder={contactFormContent.placeholderEmail}
               value={formValues.email}
               onChange={handleChange}
               disabled={loading}
@@ -90,45 +104,47 @@ export function ContactForm() {
         </div>
 
         <div className="grid md:grid-cols-2 gap-5">
-          <FormItem label="Phone (Optional)" error={fieldErrors.phone}>
+          <FormItem label={contactFormContent.labelPhone} error={fieldErrors.phone}>
             <Input
               name="phone"
-              placeholder="+84 905..."
+              placeholder={contactFormContent.placeholderPhone}
               value={formValues.phone || ""}
               onChange={handleChange}
               disabled={loading}
             />
           </FormItem>
 
-          <FormItem label="Service Type" error={fieldErrors.serviceType}>
+          <FormItem label={contactFormContent.labelServiceType} error={fieldErrors.serviceType}>
             <Select
               name="serviceType"
+              aria-label={contactFormContent.labelServiceType}
               value={formValues.serviceType}
               onChange={handleChange}
               disabled={loading}
             >
-              <option value="basic" className="bg-[#090909]">Basic Template</option>
-              <option value="standard" className="bg-[#090909]">Standard Custom</option>
-              <option value="premium" className="bg-[#090909]">Premium System</option>
-              <option value="custom" className="bg-[#090909]">Custom Work</option>
+              {contactFormContent.serviceOptions.map((opt) => (
+                <option key={opt.value} value={opt.value} className="bg-midnight">
+                  {opt.label}
+                </option>
+              ))}
             </Select>
           </FormItem>
         </div>
 
-        <FormItem label="Estimated Budget (Optional)" error={fieldErrors.budget}>
+        <FormItem label={contactFormContent.labelBudget} error={fieldErrors.budget}>
           <Input
             name="budget"
-            placeholder="e.g. 5tr - 10tr"
+            placeholder={contactFormContent.placeholderBudget}
             value={formValues.budget || ""}
             onChange={handleChange}
             disabled={loading}
           />
         </FormItem>
 
-        <FormItem label="Message" error={fieldErrors.message}>
+        <FormItem label={contactFormContent.labelMessage} error={fieldErrors.message}>
           <Textarea
             name="message"
-            placeholder="Describe your project, timeline, or thoughts here..."
+            placeholder={contactFormContent.placeholderMessage}
             value={formValues.message}
             onChange={handleChange}
             disabled={loading}
@@ -144,7 +160,7 @@ export function ContactForm() {
         )}
 
         <Button type="submit" variant="primary" size="lg" loading={loading} className="w-full mt-4">
-          Send Request
+          {contactFormContent.btnSubmit}
         </Button>
       </form>
     </Card>

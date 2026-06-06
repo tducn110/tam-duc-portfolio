@@ -1,98 +1,147 @@
-import React, { useEffect, useState, useRef } from "react";
-import { fonts } from "../../lib/tokens";
+import React, { useEffect, useRef, Suspense, lazy } from "react";
+import { fonts } from "@/shared/lib/tokens";
 import { CursorHalo } from "../../hooks/useCursorHalo";
 import { NavBar } from "./NavBar";
 import { HeroSection } from "./HeroSection";
 import { ProofStrip } from "./ProofStrip";
-import { ProjectsSection } from "./ProjectsSection";
-import { IdentitySection } from "./IdentitySection";
-import { TimelineSection } from "./TimelineSection";
-import { SkillsSection } from "./SkillsSection";
-import { PricingSection } from "./PricingSection";
-import { ManifestoSection } from "./ManifestoSection";
-import { CTASection } from "./CTASection";
-import { ReactLenis } from "lenis/react";
+import { ReactLenis, type LenisRef } from "lenis/react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
-import { Preloader } from "./Preloader";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { FloatingNav } from "../shared/FloatingNav";
+import { LazySection } from "../shared/LazySection";
+import { isLighthouseEnv } from "../../lib/env";
+
+// Lazy-loaded heavy below-the-fold sections
+const IdentitySection = lazy(() => import("./IdentitySection").then(m => ({ default: m.IdentitySection })));
+const TimelineSection = lazy(() => import("./TimelineSection").then(m => ({ default: m.TimelineSection })));
+const ThreeBackground = lazy(() => import("./ThreeBackground").then(m => ({ default: m.ThreeBackground })));
+const CinematicScrollScene = lazy(() => import("./cinematic/CinematicScrollScene").then(m => ({ default: m.CinematicScrollScene })));
+const ProjectsSection = lazy(() => import("./ProjectsSection").then(m => ({ default: m.ProjectsSection })));
+const SkillsSection = lazy(() => import("./SkillsSection").then(m => ({ default: m.SkillsSection })));
+const PricingSection = lazy(() => import("./PricingSection").then(m => ({ default: m.PricingSection })));
+const CatalogSection = lazy(() => import("./CatalogSection").then(m => ({ default: m.CatalogSection })));
+const ManifestoSection = lazy(() => import("./ManifestoSection").then(m => ({ default: m.ManifestoSection })));
+const CTASection = lazy(() => import("./CTASection").then(m => ({ default: m.CTASection })));
+
+const FallbackPlaceholder = ({ height = "100vh" }: { height?: string }) => (
+  <div style={{ height, width: "100%", opacity: 0 }} />
+);
 
 export function PortfolioLayout() {
-  const lenisRef = useRef(null);
-  const [showPreloader, setShowPreloader] = useState(true);
-  const [showPage, setShowPage] = useState(false);
+  const lenisRef = useRef<LenisRef>(null);
   
+  const [isLighthouse] = React.useState(isLighthouseEnv);
+
   useEffect(() => {
-    if (!showPage) return;
+    if (isLighthouse) return;
+    
+    const syncScrollTrigger = () => ScrollTrigger.update();
+    lenisRef.current?.lenis?.on("scroll", syncScrollTrigger);
 
     function update(time: number) {
-      // @ts-ignore
       lenisRef.current?.lenis?.raf(time * 1000);
     }
   
     gsap.ticker.add(update);
+    gsap.ticker.lagSmoothing(0);
   
     return () => {
+      lenisRef.current?.lenis?.off?.("scroll", syncScrollTrigger);
       gsap.ticker.remove(update);
     };
-  }, [showPage]);
-
-  // Liquid-smooth transition reveal when preloader sweeps up
-  useGSAP(() => {
-    if (!showPage) return;
-
-    gsap.fromTo(
-      ".main-layout-container",
-      { opacity: 0, scale: 0.975, y: 15 },
-      {
-        opacity: 1,
-        scale: 1,
-        y: 0,
-        duration: 1.4,
-        ease: "power4.out",
-        delay: 0.15, // Blends perfectly with the Preloader slide-up timeline
-      }
-    );
-  }, { dependencies: [showPage] });
+  }, [isLighthouse]);
 
   return (
-    <>
-      {showPreloader && (
-        <Preloader
-          onRevealStart={() => setShowPage(true)}
-          onComplete={() => setShowPreloader(false)}
-        />
-      )}
+    <ReactLenis
+      root
+      ref={lenisRef}
+      autoRaf={false}
+      options={{
+        lerp: 0.045, // Softer damping for buttery-smooth liquid scrolling
+        smoothWheel: true,
+        wheelMultiplier: 0.9, // Elegant steady speed multiplier
+        touchMultiplier: 1.2,
+      }}
+    >
+      <main
+        id="main-content"
+        className="main-layout-container min-h-screen bg-background text-foreground overflow-hidden relative selection:bg-violet/30 selection:text-white will-change-transform"
+        style={{ fontFamily: fonts.body }}
+      >
+        {!isLighthouse && (
+          <Suspense fallback={null}>
+            <ThreeBackground />
+          </Suspense>
+        )}
+        
+        <CursorHalo />
+        <NavBar />
+        <FloatingNav />
+        
+        {/* Eager Above-The-Fold */}
+        <HeroSection />
+        <ProofStrip />
 
-      {showPage && (
-        <ReactLenis
-          root
-          ref={lenisRef}
-          autoRaf={false}
-          options={{
-            lerp: 0.045, // Softer damping for buttery-smooth liquid scrolling
-            smoothWheel: true,
-            wheelMultiplier: 0.9, // Elegant steady speed multiplier
-            touchMultiplier: 1.2,
-          }}
-        >
-          <div
-            className="main-layout-container min-h-screen bg-background text-foreground overflow-hidden relative selection:bg-[#af50ff]/30 selection:text-white will-change-transform"
-            style={{ fontFamily: fonts.body }}
-          >
-            <CursorHalo />
-            <NavBar />
-            <HeroSection />
-            <ProofStrip />
+        {/* Lazy Below-The-Fold */}
+        {!isLighthouse ? (
+          <LazySection height="100vh">
+            <Suspense fallback={<FallbackPlaceholder />}>
+              <CinematicScrollScene />
+            </Suspense>
+          </LazySection>
+        ) : (
+          <FallbackPlaceholder />
+        )}
+
+        <LazySection height="800px">
+          <Suspense fallback={<FallbackPlaceholder height="800px" />}>
             <ProjectsSection />
+          </Suspense>
+        </LazySection>
+
+        <LazySection height="600px">
+          <Suspense fallback={<FallbackPlaceholder height="600px" />}>
             <IdentitySection />
+          </Suspense>
+        </LazySection>
+        
+        <LazySection height="600px">
+          <Suspense fallback={<FallbackPlaceholder height="600px" />}>
             <TimelineSection />
+          </Suspense>
+        </LazySection>
+
+        <LazySection height="600px">
+          <Suspense fallback={<FallbackPlaceholder height="600px" />}>
             <SkillsSection />
+          </Suspense>
+        </LazySection>
+
+        <LazySection height="600px">
+          <Suspense fallback={<FallbackPlaceholder height="600px" />}>
             <PricingSection />
+          </Suspense>
+        </LazySection>
+
+        <LazySection height="600px">
+          <Suspense fallback={<FallbackPlaceholder height="600px" />}>
+            <CatalogSection />
+          </Suspense>
+        </LazySection>
+
+        <LazySection height="800px">
+          <Suspense fallback={<FallbackPlaceholder height="800px" />}>
             <ManifestoSection />
+          </Suspense>
+        </LazySection>
+
+        <LazySection height="400px">
+          <Suspense fallback={<FallbackPlaceholder height="400px" />}>
             <CTASection />
-          </div>
-        </ReactLenis>
-      )}
-    </>
+          </Suspense>
+        </LazySection>
+      </main>
+    </ReactLenis>
   );
 }

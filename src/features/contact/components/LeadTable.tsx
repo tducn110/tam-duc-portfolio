@@ -1,8 +1,9 @@
 import { Eye, Mail, Trash2 } from "lucide-react";
 import { LeadStatusBadge } from "./LeadStatusBadge";
-import type { ContactLead } from "../types";
+import type { ContactLead } from "@/domain/contact/contact.types";
 import { useDeleteLead } from "../hooks/useDeleteLead";
 import { Button } from "@/shared/ui";
+import { adminDashboardContent } from "@/app/data/adminDashboard";
 
 export interface LeadTableProps {
   leads: ContactLead[];
@@ -16,7 +17,7 @@ export function LeadTable({ leads, loading, onSelect, onRefresh }: LeadTableProp
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation();
-    if (window.confirm("Are you sure you want to delete this lead?")) {
+    if (window.confirm(adminDashboardContent.confirmDelete)) {
       try {
         await remove(id);
         onRefresh();
@@ -30,7 +31,7 @@ export function LeadTable({ leads, loading, onSelect, onRefresh }: LeadTableProp
     return (
       <div className="flex flex-col items-center justify-center py-20 gap-3">
         <span className="w-8 h-8 border-2 border-[#af50ff] border-t-transparent rounded-full animate-spin" />
-        <span className="text-sm text-[#6b6b6b]">Loading customer leads...</span>
+        <span className="text-sm text-[#6b6b6b]">{adminDashboardContent.loadingLeads}</span>
       </div>
     );
   }
@@ -39,9 +40,9 @@ export function LeadTable({ leads, loading, onSelect, onRefresh }: LeadTableProp
     return (
       <div className="text-center py-20 border border-white/[0.04] rounded-2xl bg-white/[0.02]">
         <Mail size={36} className="text-[#6b6b6b] mx-auto mb-3" />
-        <h4 className="text-base font-semibold text-[#f7f9fa]">No leads found</h4>
+        <h4 className="text-base font-semibold text-[#f7f9fa]">{adminDashboardContent.noLeadsTitle}</h4>
         <p className="text-sm text-[#6b6b6b] mt-1 max-w-xs mx-auto">
-          When visitors submit your portfolio contact form, their requests will appear here.
+          {adminDashboardContent.noLeadsDesc}
         </p>
       </div>
     );
@@ -52,13 +53,13 @@ export function LeadTable({ leads, loading, onSelect, onRefresh }: LeadTableProp
       <table className="w-full border-collapse text-left text-sm">
         <thead>
           <tr className="border-b border-white/[0.08] bg-white/[0.02]">
-            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">Client</th>
-            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">Service</th>
-            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">Budget</th>
-            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">Status</th>
-            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">Email Status</th>
-            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">Date</th>
-            <th className="px-6 py-4 font-semibold text-[#f7f9fa] text-right">Actions</th>
+            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">{adminDashboardContent.tblClient}</th>
+            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">{adminDashboardContent.tblService}</th>
+            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">{adminDashboardContent.tblBudget}</th>
+            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">{adminDashboardContent.tblStatus}</th>
+            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">{adminDashboardContent.tblEmailStatus}</th>
+            <th className="px-6 py-4 font-semibold text-[#f7f9fa]">{adminDashboardContent.tblDate}</th>
+            <th className="px-6 py-4 font-semibold text-[#f7f9fa] text-right">{adminDashboardContent.tblActions}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-white/[0.04]">
@@ -104,6 +105,7 @@ export function LeadTable({ leads, loading, onSelect, onRefresh }: LeadTableProp
                     size="sm"
                     className="p-1.5 h-8 w-8 hover:bg-white/5 rounded-lg text-[#6b6b6b] hover:text-[#f7f9fa]"
                     onClick={() => onSelect(lead)}
+                    aria-label={`View details of lead from ${lead.name}`}
                   >
                     <Eye size={14} />
                   </Button>
@@ -112,6 +114,7 @@ export function LeadTable({ leads, loading, onSelect, onRefresh }: LeadTableProp
                     size="sm"
                     className="p-1.5 h-8 w-8 hover:bg-red-500/10 rounded-lg text-[#6b6b6b] hover:text-red-400 border-transparent hover:border-transparent"
                     onClick={(e) => handleDelete(e, lead.id)}
+                    aria-label={`Delete lead from ${lead.name}`}
                   >
                     <Trash2 size={14} />
                   </Button>
@@ -124,3 +127,4 @@ export function LeadTable({ leads, loading, onSelect, onRefresh }: LeadTableProp
     </div>
   );
 }
+

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { listLeads } from "../api/lead.client";
-import type { ContactLead } from "../types";
+import type { ContactLead } from "@/domain/contact/contact.types";
 
 export function useLeads() {
   const [leads, setLeads] = useState<ContactLead[]>([]);

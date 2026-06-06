@@ -1,5 +1,5 @@
-import type { ContactService } from "../services/contact.service";
-import type { ContactLead } from "@/features/contact/types";
+import type { ContactService } from "@/domain/contact/contact.service";
+import type { ContactLead } from "@/domain/contact/contact.types";
 
 export class LeadRoutes {
   constructor(private contactService: ContactService) {}

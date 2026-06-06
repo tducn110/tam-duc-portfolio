@@ -1,5 +1,21 @@
-import type { ReactNode } from "react";
 import type { ColorKey } from "@/shared/lib/tokens";
+
+export type IconName =
+  | "Code2"
+  | "Brain"
+  | "Gamepad2"
+  | "Terminal"
+  | "Globe"
+  | "Sparkles"
+  | "GraduationCap"
+  | "MapPin"
+  | "Github"
+  | "Trophy"
+  | "Hammer"
+  | "Zap"
+  | "Star"
+  | "Cpu";
+export type AbstractVariant = "dots" | "bars" | "grid" | "rune";
 
 export interface HeroBadge {
   label: string;
@@ -9,7 +25,7 @@ export interface HeroBadge {
 
 export interface ProofItem {
   label: string;
-  icon: React.ComponentType<{ size?: number; className?: string }>;
+  iconName: IconName;
   color: ColorKey;
 }
 
@@ -21,13 +37,14 @@ export interface Project {
   tech: string[];
   github: string;
   demo?: string;
-  icon: ReactNode;
+  iconName: IconName;
   color: ColorKey;
-  abstract: ReactNode;
+  abstractVariant: AbstractVariant;
+  abstractColor: string;
 }
 
 export interface IdentityCardData {
-  icon: ReactNode;
+  iconName: IconName;
   title: string;
   subtitle: string;
   text: string;
@@ -56,7 +73,7 @@ export interface SpecialTrait {
   trait: string;
   desc: string;
   color: ColorKey;
-  icon: ReactNode;
+  iconName: IconName;
 }
 
 export interface NavItem {

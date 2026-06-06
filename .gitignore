@@ -26,3 +26,7 @@ npm-debug.log*
 # Coverage
 coverage/
 .vercel
+lighthouse-report*.json
+test-page*.js
+create_model.py
+.gemini-web-guidance.md

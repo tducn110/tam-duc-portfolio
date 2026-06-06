@@ -41,7 +41,7 @@
 
   /* ========== Typography ========== */
   --font-grandslang: 'Playfair Display', Georgia, serif;
-  --font-whyte: 'Karla', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-whyte: 'Plus Jakarta Sans', 'Karla', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-whyte-mono: 'Space Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
 
   /* Type scale (dope.security) */
@@ -155,6 +155,10 @@
   --color-violet: var(--color-deep-violet);
   --color-cosmic-a: var(--color-cosmic-violet-a);
   --color-cosmic-b: var(--color-cosmic-violet-b);
+
+  --font-display: var(--font-grandslang);
+  --font-sans: var(--font-whyte);
+  --font-mono: var(--font-whyte-mono);
 }
 
 @layer base {
@@ -269,3 +273,423 @@
 .animate-marquee {
   animation: marquee 30s linear infinite;
 }
+
+/* ─── Premium Cybernetic Hover Spotlight ─── */
+.spotlight-border-card {
+  position: relative;
+}
+.spotlight-border-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    300px circle at var(--mouse-x, 0px) var(--mouse-y, 0px),
+    rgba(175, 80, 255, 0.5) 0%,
+    rgba(13, 148, 136, 0.2) 50%,
+    transparent 100%
+  );
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  z-index: 2;
+  transition: opacity 0.4s ease;
+}
+
+/* ─── Rotating Cyber HUD Keyframes ─── */
+@keyframes spin-clockwise {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes spin-counter {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(-360deg); }
+}
+@keyframes pulse-slow {
+  0%, 100% { opacity: 0.3; transform: scale(0.98); }
+  50% { opacity: 0.65; transform: scale(1.02); }
+}
+
+.animate-spin-slow {
+  animation: spin-clockwise 45s linear infinite;
+}
+.animate-spin-reverse-slow {
+  animation: spin-counter 30s linear infinite;
+}
+.animate-pulse-slow {
+  animation: pulse-slow 8s ease-in-out infinite;
+}
+
+/* ─── Glowing Neon Text / Box Shadows ─── */
+.text-neon-glow-violet {
+  text-shadow: 0 0 10px rgba(175, 80, 255, 0.4), 0 0 20px rgba(175, 80, 255, 0.2);
+}
+.text-neon-glow-teal {
+  text-shadow: 0 0 10px rgba(13, 148, 136, 0.4), 0 0 20px rgba(13, 148, 136, 0.2);
+}
+.box-glow-violet {
+  box-shadow: 0 0 25px rgba(175, 80, 255, 0.25);
+}
+.box-glow-teal {
+  box-shadow: 0 0 25px rgba(13, 148, 136, 0.25);
+}
+
+/* ─── Shimmer / Holographic Sweep ─── */
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+.shimmer-sweep {
+  background: linear-gradient(
+    120deg,
+    transparent 25%,
+    rgba(175, 80, 255, 0.12) 37%,
+    rgba(13, 148, 136, 0.08) 50%,
+    transparent 63%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 3s linear infinite;
+}
+
+/* ─── Rarity Card Borders (Game Achievement Style) ─── */
+@keyframes rarity-border {
+  0%, 100% { border-color: rgba(175, 80, 255, 0.35); box-shadow: 0 0 12px rgba(175, 80, 255, 0.15); }
+  50% { border-color: rgba(175, 80, 255, 0.7); box-shadow: 0 0 28px rgba(175, 80, 255, 0.35); }
+}
+.rarity-epic {
+  border: 1px solid rgba(175, 80, 255, 0.35);
+  animation: rarity-border 3s ease-in-out infinite;
+}
+.rarity-legendary {
+  border: 1px solid rgba(245, 158, 11, 0.4);
+  animation: rarity-border-gold 3s ease-in-out infinite;
+}
+@keyframes rarity-border-gold {
+  0%, 100% { border-color: rgba(245, 158, 11, 0.35); box-shadow: 0 0 12px rgba(245, 158, 11, 0.15); }
+  50% { border-color: rgba(245, 158, 11, 0.75); box-shadow: 0 0 28px rgba(245, 158, 11, 0.35); }
+}
+
+/* ─── Scanline Overlay ─── */
+.scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(0, 0, 0, 0.04) 2px,
+    rgba(0, 0, 0, 0.04) 4px
+  );
+  z-index: 1;
+}
+
+/* ─── Aurora Animated Background ─── */
+@keyframes aurora-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+.aurora-bg {
+  background: linear-gradient(
+    -45deg,
+    rgba(175, 80, 255, 0.15),
+    rgba(72, 35, 180, 0.1),
+    rgba(13, 148, 136, 0.12),
+    rgba(9, 9, 9, 0.95)
+  );
+  background-size: 400% 400%;
+  animation: aurora-shift 18s ease infinite;
+}
+
+/* ─── Noise Texture Overlay (pure CSS) ─── */
+.noise-overlay::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  opacity: 0.035;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 200px 200px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* ─── Floating / Levitate Keyframes ─── */
+@keyframes float {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(-8px) rotate(0.5deg); }
+  75% { transform: translateY(4px) rotate(-0.5deg); }
+}
+@keyframes float-reverse {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  25% { transform: translateY(6px) rotate(-0.5deg); }
+  75% { transform: translateY(-10px) rotate(0.5deg); }
+}
+.animate-float { animation: float 6s ease-in-out infinite; }
+.animate-float-reverse { animation: float-reverse 7s ease-in-out infinite; }
+.animate-float-slow { animation: float 10s ease-in-out infinite; }
+
+/* ─── Equalizer Bars ─── */
+@keyframes eq-bar {
+  0%, 100% { height: 20%; }
+  25% { height: 80%; }
+  50% { height: 40%; }
+  75% { height: 95%; }
+}
+
+/* ─── Concentric Pulse ─── */
+@keyframes concentric-pulse {
+  0% { transform: scale(0.6); opacity: 0.8; }
+  100% { transform: scale(2.2); opacity: 0; }
+}
+
+/* ─── Wire Rotate ─── */
+@keyframes wire-rotate {
+  0% { transform: rotateY(0deg) rotateX(15deg); }
+  100% { transform: rotateY(360deg) rotateX(15deg); }
+}
+
+/* ─── Flicker Effect ─── */
+@keyframes flicker {
+  0%, 19%, 21%, 23%, 25%, 54%, 56%, 100% { opacity: 1; }
+  20%, 24%, 55% { opacity: 0.3; }
+}
+.animate-flicker { animation: flicker 4s ease-in-out infinite; }
+
+/* ─── Gradient Text (reusable) ─── */
+.gradient-text-violet {
+  background: linear-gradient(135deg, #af50ff, #6c4bd6, #a78bfa);
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* ─── Path Drawing (for SVG animations) ─── */
+.draw-path {
+  stroke-dasharray: var(--path-length, 1000);
+  stroke-dashoffset: var(--path-length, 1000);
+}
+
+/* ─── Counter Animation Base ─── */
+.counter-glow {
+  text-shadow: 0 0 20px rgba(175, 80, 255, 0.5), 0 0 40px rgba(175, 80, 255, 0.25), 0 0 80px rgba(175, 80, 255, 0.1);
+}
+
+/* ─── Horizontal scroll pinned section ─── */
+.horizontal-scroll-wrapper {
+  overflow: hidden;
+}
+.horizontal-scroll-track {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 2rem;
+  will-change: transform;
+}
+
+/* ─── Scroll Progress Line ─── */
+.scroll-progress-line {
+  position: absolute;
+  width: 2px;
+  background: linear-gradient(180deg, var(--color-deep-violet), var(--color-cosmic-violet-a), transparent);
+  box-shadow: 0 0 12px rgba(175, 80, 255, 0.5);
+  transform-origin: top;
+}
+
+/* ─── Interactive Word Reveal ─── */
+.word-reveal {
+  display: inline-block;
+  opacity: 0.08;
+  filter: blur(4px);
+  transition: opacity 0.4s ease, filter 0.4s ease;
+}
+.word-reveal.revealed {
+  opacity: 1;
+  filter: blur(0);
+}
+
+/* ─── Floating Nav Pill ─── */
+.floating-nav {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 60;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border-radius: 9999px;
+  background: rgba(9, 9, 9, 0.75);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid rgba(247, 249, 250, 0.08);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+}
+.floating-nav-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(247, 249, 250, 0.2);
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+.floating-nav-dot:hover {
+  background: rgba(175, 80, 255, 0.5);
+  transform: scale(1.3);
+}
+.floating-nav-dot.active {
+  background: #af50ff;
+  box-shadow: 0 0 10px rgba(175, 80, 255, 0.5);
+  transform: scale(1.3);
+}
+
+/* ─── Pricing Card Tilt Spotlight ─── */
+.tier-card-tilt {
+  transform-style: preserve-3d;
+  perspective: 800px;
+  will-change: transform;
+}
+
+.tier-card-tilt .card-spotlight {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+  background: radial-gradient(
+    350px circle at var(--spotlight-x, 50%) var(--spotlight-y, 50%),
+    rgba(175, 80, 255, 0.12) 0%,
+    transparent 100%
+  );
+}
+
+.tier-card-tilt:hover .card-spotlight {
+  opacity: 1;
+}
+
+/* ─── Price Counter Glow ─── */
+.price-glow {
+  text-shadow: 0 0 15px rgba(175, 80, 255, 0.3), 0 0 30px rgba(175, 80, 255, 0.1);
+}
+
+/* ─── Enhanced Button Interactions ─── */
+.btn-pricing {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.btn-pricing::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    120deg,
+    transparent 25%,
+    rgba(255, 255, 255, 0.15) 50%,
+    transparent 75%
+  );
+  background-size: 200% 100%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.btn-pricing:hover::before {
+  opacity: 1;
+  animation: shimmer 1.5s linear;
+}
+
+.btn-pricing:active {
+  transform: scale(0.97);
+}
+
+.btn-pricing:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(175, 80, 255, 0.5), 0 0 20px rgba(175, 80, 255, 0.2);
+}
+
+/* ─── Filter Tab Pill ─── */
+.filter-tab {
+  position: relative;
+  padding: 6px 16px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-family: var(--font-whyte-mono);
+  letter-spacing: 0.08em;
+  color: var(--color-slate-hint);
+  background: transparent;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.filter-tab:hover {
+  color: var(--color-cloud-whisper);
+  background: rgba(175, 80, 255, 0.08);
+  border-color: rgba(175, 80, 255, 0.15);
+}
+
+.filter-tab:active {
+  transform: scale(0.95);
+}
+
+.filter-tab:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(175, 80, 255, 0.4);
+}
+
+.filter-tab.active {
+  color: var(--color-cloud-whisper);
+  background: rgba(175, 80, 255, 0.15);
+  border-color: rgba(175, 80, 255, 0.35);
+}
+
+/* ─── Catalog Card Hover ─── */
+.catalog-card {
+  transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.catalog-card:hover {
+  box-shadow: 0 24px 64px -16px rgba(175, 80, 255, 0.15),
+              0 1px 0 rgba(247, 249, 250, 0.08) inset;
+}
+
+/* ─── HOT badge pulse ─── */
+@keyframes hot-pulse {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(175, 80, 255, 0.4);
+    transform: scale(1);
+  }
+  50% {
+    box-shadow: 0 0 18px rgba(175, 80, 255, 0.7);
+    transform: scale(1.05);
+  }
+}
+
+.badge-hot {
+  animation: hot-pulse 2s ease-in-out infinite;
+}
+
+/* ─── Marquee scroll for catalog ─── */
+.catalog-marquee {
+  display: flex;
+  gap: 1.5rem;
+  will-change: transform;
+}
+
+/* ─── Feature list stagger reveal ─── */
+.feature-item {
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover {
+  padding-left: 4px;
+  color: var(--color-cloud-whisper);
+}
+

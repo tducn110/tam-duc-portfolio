@@ -1,8 +1,8 @@
 import { describe, it, expect, vi, beforeEach } from "vitest";
-import { DefaultContactService } from "../../server/services/contact.service";
+import { DefaultContactService } from "@/domain/contact/contact.service";
 import { MemoryCustomerRepository } from "../../server/repositories/customer.memory.repository";
 import type { EmailService } from "../../server/services/email.service";
-import type { ContactLead } from "../contact/types";
+import type { ContactLead } from "@/domain/contact/contact.types";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createContactLead } from "../api/contact.client";
-import type { ContactCreateInput } from "../schemas/contact.schema";
+import type { ContactCreateInput } from "@/domain/contact/contact.schema";
 
 export function useCreateContact() {
   const [loading, setLoading] = useState(false);

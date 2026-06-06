@@ -1,9 +1,10 @@
 import { X, Calendar, User, Mail, Phone, Briefcase, DollarSign, MessageSquare, Trash2 } from "lucide-react";
 import { Button, Card } from "@/shared/ui";
 import { LeadStatusBadge } from "./LeadStatusBadge";
-import type { ContactLead } from "../types";
+import type { ContactLead } from "@/domain/contact/contact.types";
 import { useUpdateLeadStatus } from "../hooks/useUpdateLeadStatus";
 import { useDeleteLead } from "../hooks/useDeleteLead";
+import { adminDashboardContent } from "@/app/data/adminDashboard";
 
 export interface LeadDetailDrawerProps {
   lead: ContactLead | null;
@@ -27,7 +28,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
   };
 
   const handleDelete = async () => {
-    if (window.confirm("Are you sure you want to delete this lead? This action cannot be undone.")) {
+    if (window.confirm(adminDashboardContent.confirmDeleteAction)) {
       try {
         await remove(lead.id);
         onUpdate();
@@ -48,7 +49,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
         {/* Header */}
         <div className="flex items-center justify-between pb-4 border-b border-white/[0.08] mb-6">
           <div className="flex items-center gap-3">
-            <h3 className="text-xl font-semibold text-[#f7f9fa]">Lead Details</h3>
+            <h3 className="text-xl font-semibold text-[#f7f9fa]">{adminDashboardContent.detailsTitle}</h3>
             <LeadStatusBadge status={lead.status} />
           </div>
           <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-white/5 text-[#6b6b6b] hover:text-[#f7f9fa] transition-colors">
@@ -61,7 +62,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
           <div className="flex items-start gap-3">
             <User size={16} className="text-[#af50ff] mt-0.5" />
             <div>
-              <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">Client Name</span>
+              <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">{adminDashboardContent.labelClientName}</span>
               <span className="text-sm font-semibold text-[#f7f9fa]">{lead.name}</span>
             </div>
           </div>
@@ -69,7 +70,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
           <div className="flex items-start gap-3">
             <Mail size={16} className="text-[#af50ff] mt-0.5" />
             <div>
-              <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">Email Address</span>
+              <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">{adminDashboardContent.labelEmailAddress}</span>
               <a href={`mailto:${lead.email}`} className="text-sm text-[#af50ff] hover:underline">{lead.email}</a>
             </div>
           </div>
@@ -78,7 +79,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
             <div className="flex items-start gap-3">
               <Phone size={16} className="text-[#af50ff] mt-0.5" />
               <div>
-                <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">Phone Number</span>
+                <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">{adminDashboardContent.labelPhoneNumber}</span>
                 <span className="text-sm text-[#f7f9fa]">{lead.phone}</span>
               </div>
             </div>
@@ -88,7 +89,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
             <div className="flex items-start gap-3">
               <Briefcase size={16} className="text-[#af50ff] mt-0.5" />
               <div>
-                <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">Service Type</span>
+                <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">{adminDashboardContent.labelServiceType}</span>
                 <span className="text-sm font-medium text-[#f7f9fa] capitalize">{lead.serviceType}</span>
               </div>
             </div>
@@ -97,7 +98,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
               <div className="flex items-start gap-3">
                 <DollarSign size={16} className="text-[#af50ff] mt-0.5" />
                 <div>
-                  <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">Budget</span>
+                  <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">{adminDashboardContent.labelBudget}</span>
                   <span className="text-sm font-medium text-[#f7f9fa]">{lead.budget}</span>
                 </div>
               </div>
@@ -107,7 +108,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
           <div className="flex items-start gap-3">
             <Calendar size={16} className="text-[#af50ff] mt-0.5" />
             <div>
-              <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">Submitted At</span>
+              <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider">{adminDashboardContent.labelSubmittedAt}</span>
               <span className="text-sm text-[#f0f0f0]/80">{new Date(lead.createdAt).toLocaleString()}</span>
             </div>
           </div>
@@ -117,7 +118,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
         <div className="mb-8 flex-1">
           <div className="flex items-center gap-2 mb-2 text-[#6b6b6b]">
             <MessageSquare size={14} />
-            <span className="text-xs uppercase tracking-wider">Message</span>
+            <span className="text-xs uppercase tracking-wider">{adminDashboardContent.labelMessage}</span>
           </div>
           <div className="p-4 rounded-lg bg-white/5 border border-white/[0.04] text-sm text-[#f0f0f0]/85 whitespace-pre-wrap leading-relaxed min-h-[120px]">
             {lead.message}
@@ -127,7 +128,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
         {/* Actions */}
         <div className="pt-4 border-t border-white/[0.08] space-y-4">
           <div>
-            <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider mb-2">Update Status</span>
+            <span className="text-[10px] text-[#6b6b6b] block uppercase tracking-wider mb-2">{adminDashboardContent.labelUpdateStatus}</span>
             <div className="grid grid-cols-4 gap-2">
               <Button
                 variant={lead.status === "new" ? "primary" : "secondary"}
@@ -135,7 +136,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
                 disabled={updating}
                 onClick={() => handleStatusChange("new")}
               >
-                New
+                {adminDashboardContent.btnStatusNew}
               </Button>
               <Button
                 variant={lead.status === "contacted" ? "primary" : "secondary"}
@@ -143,7 +144,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
                 disabled={updating}
                 onClick={() => handleStatusChange("contacted")}
               >
-                Contacted
+                {adminDashboardContent.btnStatusContacted}
               </Button>
               <Button
                 variant={lead.status === "closed" ? "primary" : "secondary"}
@@ -151,7 +152,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
                 disabled={updating}
                 onClick={() => handleStatusChange("closed")}
               >
-                Closed
+                {adminDashboardContent.btnStatusClosed}
               </Button>
               <Button
                 variant={lead.status === "rejected" ? "primary" : "secondary"}
@@ -159,7 +160,7 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
                 disabled={updating}
                 onClick={() => handleStatusChange("rejected")}
               >
-                Reject
+                {adminDashboardContent.btnStatusReject}
               </Button>
             </div>
           </div>
@@ -172,10 +173,11 @@ export function LeadDetailDrawer({ lead, onClose, onUpdate }: LeadDetailDrawerPr
             iconLeft={<Trash2 size={14} />}
             className="w-full flex items-center justify-center gap-2"
           >
-            Delete Lead
+            {adminDashboardContent.btnDeleteLead}
           </Button>
         </div>
       </div>
     </div>
   );
 }
+

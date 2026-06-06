@@ -1,5 +1,5 @@
-import type { ContactCreateInput } from "../schemas/contact.schema";
-import type { ContactLead } from "../types";
+import type { ContactCreateInput } from "@/domain/contact/contact.schema";
+import type { ContactLead } from "@/domain/contact/contact.types";
 
 export async function createContactLead(input: ContactCreateInput): Promise<ContactLead> {
   const res = await fetch("/api/contact", {

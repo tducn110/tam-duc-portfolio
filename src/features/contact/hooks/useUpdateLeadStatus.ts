@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { updateLeadStatus } from "../api/lead.client";
-import type { ContactLead } from "../types";
+import type { ContactLead } from "@/domain/contact/contact.types";
 
 export function useUpdateLeadStatus() {
   const [loading, setLoading] = useState(false);

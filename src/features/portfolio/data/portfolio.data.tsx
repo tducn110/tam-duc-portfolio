@@ -1,33 +1,31 @@
-import React from "react";
-import {
-  Code2,
-  Brain,
-  Gamepad2,
-  Terminal,
-  Globe,
-  Sparkles,
-  GraduationCap,
-  MapPin,
-  Github,
-  Trophy,
-  Hammer,
-  Zap,
-  Star,
-  Cpu
-} from "lucide-react";
 import { links } from "@/app/lib/links";
-import type {
-  HeroBadge,
-  ProofItem,
-  Project,
-  IdentityCardData,
-  TimelineStep,
-  SkillItem,
-  SpecialTrait,
-  NavItem
-} from "../types";
+
+export type IconName =
+  | "Code2"
+  | "Brain"
+  | "Gamepad2"
+  | "Terminal"
+  | "Globe"
+  | "Sparkles"
+  | "GraduationCap"
+  | "MapPin"
+  | "Github"
+  | "Trophy"
+  | "Hammer"
+  | "Zap"
+  | "Star"
+  | "Cpu";
+export type AbstractVariant = "dots" | "bars" | "grid" | "rune";
+
+export type ColorKey = "steel" | "violet" | "mauve" | "indigo" | "teal" | "amber" | "rose" | "slate";
 
 // ─── Hero badges ──────────────────────────────────────────────────────────────
+export interface HeroBadge {
+  label: string;
+  color: ColorKey;
+  pos: string;
+}
+
 export const heroBadges: HeroBadge[] = [
   { label: "20 yrs old", color: "indigo", pos: "top-4 left-2" },
   { label: "GPA 3.8", color: "teal", pos: "top-10 right-4" },
@@ -40,74 +38,35 @@ export const heroBadges: HeroBadge[] = [
 ];
 
 // ─── Proof strip ──────────────────────────────────────────────────────────────
+export interface ProofItem {
+  label: string;
+  iconName: IconName;
+  color: ColorKey;
+}
+
 export const proofItems: ProofItem[] = [
-  { label: "CSE Student", icon: GraduationCap, color: "indigo" },
-  { label: "Da Nang, Vietnam", icon: MapPin, color: "teal" },
-  { label: "14 GitHub repos", icon: Github, color: "slate" },
-  { label: "GPA 3.8", icon: Star, color: "violet" },
-  { label: "TFT Master", icon: Trophy, color: "amber" },
-  { label: "Web + Game experiments", icon: Hammer, color: "rose" },
+  { label: "CSE Student", iconName: "GraduationCap", color: "indigo" },
+  { label: "Da Nang, Vietnam", iconName: "MapPin", color: "teal" },
+  { label: "14 GitHub repos", iconName: "Github", color: "slate" },
+  { label: "GPA 3.8", iconName: "Star", color: "violet" },
+  { label: "TFT Master", iconName: "Trophy", color: "amber" },
+  { label: "Web + Game experiments", iconName: "Hammer", color: "rose" },
 ];
 
 // ─── Projects ─────────────────────────────────────────────────────────────────
-const AbstractDots = ({ color }: { color: string }) => (
-  <div className="flex items-center justify-center w-full h-full gap-2">
-    {[1, 2, 3, 4, 5].map((i) => (
-      <span
-        key={i}
-        className="rounded-full"
-        style={{
-          width: 8 + (i % 3) * 4,
-          height: 8 + (i % 3) * 4,
-          background: color,
-          opacity: 0.35 + i * 0.12,
-        }}
-      />
-    ))}
-  </div>
-);
-
-const AbstractBars = ({ color }: { color: string }) => (
-  <div className="flex items-end justify-center w-full h-full gap-2 pb-2">
-    {[40, 70, 55, 90, 45, 75].map((h, i) => (
-      <span
-        key={i}
-        className="rounded-sm"
-        style={{
-          width: 8,
-          height: `${h}%`,
-          background: color,
-          opacity: 0.3 + (i % 3) * 0.2,
-        }}
-      />
-    ))}
-  </div>
-);
-
-const AbstractGrid = ({ color }: { color: string }) => (
-  <div className="grid grid-cols-4 grid-rows-3 gap-1.5 p-4 w-full h-full">
-    {Array.from({ length: 12 }).map((_, i) => (
-      <span
-        key={i}
-        className="rounded"
-        style={{
-          background: color,
-          opacity: [0.1, 0.2, 0.35, 0.5, 0.7][i % 5],
-        }}
-      />
-    ))}
-  </div>
-);
-
-const AbstractRune = ({ color }: { color: string }) => (
-  <div className="flex items-center justify-center w-full h-full">
-    <svg width="80" height="80" viewBox="0 0 80 80" fill="none">
-      <path d="M40 8 L72 40 L40 72 L8 40 Z" stroke={color} strokeWidth="1.5" />
-      <path d="M40 22 L58 40 L40 58 L22 40 Z" stroke={color} strokeWidth="1" opacity="0.6" />
-      <circle cx="40" cy="40" r="4" fill={color} />
-    </svg>
-  </div>
-);
+export interface Project {
+  title: string;
+  role: string;
+  problem: string;
+  built: string;
+  tech: string[];
+  github: string;
+  demo?: string;
+  iconName: IconName;
+  color: ColorKey;
+  abstractVariant: AbstractVariant;
+  abstractColor: string;
+}
 
 export const projects: Project[] = [
   {
@@ -129,9 +88,10 @@ export const projects: Project[] = [
     ],
     github: links.projects.financeTracker,
     demo: links.projects.financeTracker,
-    icon: React.createElement(Terminal, { size: 18 }),
+    iconName: "Terminal",
     color: "indigo",
-    abstract: React.createElement(AbstractBars, { color: "#f1ccff" }),
+    abstractVariant: "bars",
+    abstractColor: "#f1ccff",
   },
   {
     title: "PingBall Landing Page",
@@ -142,9 +102,10 @@ export const projects: Project[] = [
       "Responsive layout, clear CTA hierarchy, and event information architecture — small, sharp, and ships.",
     tech: ["TypeScript", "Tailwind CSS", "Responsive UI", "Event Design"],
     github: links.projects.pingBall,
-    icon: React.createElement(Globe, { size: 18 }),
+    iconName: "Globe",
     color: "teal",
-    abstract: React.createElement(AbstractDots, { color: "#0d9488" }),
+    abstractVariant: "dots",
+    abstractColor: "#0d9488",
   },
   {
     title: "Unsaid Words, Shared Hearts",
@@ -155,9 +116,10 @@ export const projects: Project[] = [
       "Anonymous note-sharing app where users send unsaid words and receive comfort replies. Designed around privacy and emotional flow.",
     tech: ["TypeScript", "Anonymous Notes", "Emotional UX", "UI Flow"],
     github: links.projects.unsaidWords,
-    icon: React.createElement(Sparkles, { size: 18 }),
+    iconName: "Sparkles",
     color: "violet",
-    abstract: React.createElement(AbstractGrid, { color: "#a78bfa" }),
+    abstractVariant: "grid",
+    abstractColor: "#a78bfa",
   },
   {
     title: "First Game Prototype",
@@ -168,16 +130,27 @@ export const projects: Project[] = [
       "Unity prototype exploring core mechanics and custom ShaderLab/HLSL visual effects. The start of learning game-feel from the inside.",
     tech: ["Unity", "C#", "ShaderLab", "HLSL", "Game Design"],
     github: links.projects.firstGame,
-    icon: React.createElement(Gamepad2, { size: 18 }),
+    iconName: "Gamepad2",
     color: "amber",
-    abstract: React.createElement(AbstractRune, { color: "#f59e0b" }),
+    abstractVariant: "rune",
+    abstractColor: "#f59e0b",
   },
 ];
 
 // ─── Identity ────────────────────────────────────────────────────────────────
+export interface IdentityCardData {
+  iconName: IconName;
+  title: string;
+  subtitle: string;
+  text: string;
+  tags: string[];
+  color: ColorKey;
+  stat: { label: string; value: string };
+}
+
 export const identityCards: IdentityCardData[] = [
   {
-    icon: React.createElement(Code2, { size: 22 }),
+    iconName: "Code2",
     title: "Developer",
     subtitle: "WEB · BACKEND · SYSTEMS",
     text:
@@ -187,7 +160,7 @@ export const identityCards: IdentityCardData[] = [
     stat: { label: "REPOS SHIPPED", value: "14" },
   },
   {
-    icon: React.createElement(Gamepad2, { size: 22 }),
+    iconName: "Gamepad2",
     title: "Gamer",
     subtitle: "TFT MASTER · LOL IRON III",
     text:
@@ -197,7 +170,7 @@ export const identityCards: IdentityCardData[] = [
     stat: { label: "PEAK RANK", value: "MSTR" },
   },
   {
-    icon: React.createElement(Brain, { size: 22 }),
+    iconName: "Brain",
     title: "AI-era Builder",
     subtitle: "AI AS A SECOND BRAIN",
     text:
@@ -209,6 +182,13 @@ export const identityCards: IdentityCardData[] = [
 ];
 
 // ─── Timeline ─────────────────────────────────────────────────────────────────
+export interface TimelineStep {
+  phase: string;
+  time: string;
+  text: string;
+  color: ColorKey;
+}
+
 export const timeline: TimelineStep[] = [
   {
     phase: "Scattered ideas",
@@ -248,6 +228,23 @@ export const timeline: TimelineStep[] = [
 ];
 
 // ─── Skills ───────────────────────────────────────────────────────────────────
+export type Tier = "Core" | "Strong" | "Active" | "Growing" | "Exploring";
+
+export const tierDots: Record<Tier, number> = {
+  Core: 5,
+  Strong: 4,
+  Active: 3,
+  Growing: 2,
+  Exploring: 1,
+};
+
+export interface SkillItem {
+  label: string;
+  tier: Tier;
+  color: ColorKey;
+  evidence: string;
+}
+
 export const skills: SkillItem[] = [
   { label: "TypeScript · React · Next.js", tier: "Core", color: "indigo", evidence: "Used in 3+ shipped projects" },
   { label: "AI-Augmented Workflow", tier: "Core", color: "violet", evidence: "Planning, debug, refactor — daily" },
@@ -265,19 +262,46 @@ export const techChips = [
   "Turborepo", "Vercel", "GitHub", "Figma", "AI Prompting", "Unity", "C#",
 ];
 
+export interface SpecialTrait {
+  trait: string;
+  desc: string;
+  color: ColorKey;
+  iconName: IconName;
+}
+
 export const specialTraits: SpecialTrait[] = [
-  { trait: "AI-Augmented", desc: "uses AI as cognitive leverage", color: "violet", icon: React.createElement(Brain, { size: 12 }) },
-  { trait: "Builder Mindset", desc: "ships first, perfects later", color: "indigo", icon: React.createElement(Zap, { size: 12 }) },
-  { trait: "Meta Thinker", desc: "patterns from gaming to systems", color: "amber", icon: React.createElement(Trophy, { size: 12 }) },
-  { trait: "Honest Learner", desc: "knows what he doesn't know yet", color: "teal", icon: React.createElement(Cpu, { size: 12 }) },
+  { trait: "AI-Augmented", desc: "uses AI as cognitive leverage", color: "violet", iconName: "Brain" },
+  { trait: "Builder Mindset", desc: "ships first, perfects later", color: "indigo", iconName: "Zap" },
+  { trait: "Meta Thinker", desc: "patterns from gaming to systems", color: "amber", iconName: "Trophy" },
+  { trait: "Honest Learner", desc: "knows what he doesn't know yet", color: "teal", iconName: "Cpu" },
 ];
 
 // ─── Nav ──────────────────────────────────────────────────────────────────────
+export interface NavItem {
+  id: string;
+  label: string;
+}
+
 export const navItems: NavItem[] = [
   { id: "projects", label: "Projects" },
   { id: "identity", label: "Identity" },
   { id: "timeline", label: "Story" },
   { id: "skills", label: "Skills" },
-  { id: "pricing", label: "Pricing" },
+  { id: "labs", label: "Labs" },
+  { id: "about", label: "About" },
+  { id: "contact", label: "Contact" },
+];
+
+export const navConfig = {
+  logoText: "td",
+  logoName: "tdu._cn",
+  githubLabel: "GITHUB"
+};
+
+export const mobileNavItems = [
+  { id: "projects", label: "Projects" },
+  { id: "timeline", label: "Story" },
+  { id: "labs", label: "Labs" },
+  { id: "about", label: "About" },
   { id: "contact", label: "Contact" },
 ];

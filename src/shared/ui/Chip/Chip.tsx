@@ -1,4 +1,3 @@
-import { motion } from "motion/react";
 import { colorMap, fonts, type ColorKey } from "@/shared/lib/tokens";
 import { cn } from "@/shared/lib/cn";
 
@@ -19,10 +18,7 @@ export function Chip({
 }: ChipProps) {
   const c = colorMap[color];
   return (
-    <motion.span
-      initial={{ opacity: 0, scale: 0.9, y: 6 }}
-      animate={{ opacity: 1, scale: 1, y: 0 }}
-      transition={{ delay, type: "spring", stiffness: 220, damping: 22 }}
+    <span
       className={cn(
         "inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-[11px] border backdrop-blur-md",
         c.border,
@@ -35,7 +31,7 @@ export function Chip({
     >
       {icon}
       {label}
-    </motion.span>
+    </span>
   );
 }
 

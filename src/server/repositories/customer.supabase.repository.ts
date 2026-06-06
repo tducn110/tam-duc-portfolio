@@ -1,42 +1,18 @@
 import { supabase } from "@/shared/lib/supabase";
-import type { ContactLead } from "@/features/contact/types";
-import type { ContactCreateInput } from "@/features/contact/schemas/contact.schema";
-import type { CustomerRepository } from "./customer.repository";
-
-type Row = {
-  id: string;
-  name: string;
-  email: string;
-  phone: string | null;
-  service_type: "basic" | "standard" | "premium" | "custom";
-  budget: string | null;
-  message: string;
-  status: "new" | "contacted" | "closed" | "rejected";
-  notification_status: "pending" | "sent" | "failed";
-  created_at: string;
-  updated_at: string;
-};
-
-/** Map Supabase snake_case row → camelCase domain type */
-function rowToLead(row: Row): ContactLead {
-  return {
-    id: row.id,
-    name: row.name,
-    email: row.email,
-    phone: row.phone ?? undefined,
-    serviceType: row.service_type,
-    budget: row.budget ?? undefined,
-    message: row.message,
-    status: row.status,
-    notificationStatus: row.notification_status,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at,
-  };
-}
+import type { ContactLead } from "@/domain/contact/contact.types";
+import type { ContactCreateInput } from "@/domain/contact/contact.schema";
+import type { CustomerRepository } from "@/domain/contact/contact.repository";
+import { rowToLead, type SupabaseLeadRow } from "@/domain/contact/contact.mapper";
 
 export class SupabaseCustomerRepository implements CustomerRepository {
+  private supabaseClient: any;
+
+  constructor(supabaseClient?: any) {
+    this.supabaseClient = supabaseClient || supabase;
+  }
+
   async create(input: ContactCreateInput): Promise<ContactLead> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabaseClient
       .from("contact_leads")
       .insert({
         name: input.name,
@@ -50,35 +26,36 @@ export class SupabaseCustomerRepository implements CustomerRepository {
       .single();
 
     if (error) throw new Error(`[Supabase] create failed: ${error.message}`);
-    return rowToLead(data as Row);
+    return rowToLead(data as SupabaseLeadRow);
   }
 
   async findMany(): Promise<ContactLead[]> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabaseClient
       .from("contact_leads")
       .select("*")
+      .neq("status", "archived")
       .order("created_at", { ascending: false });
 
     if (error) throw new Error(`[Supabase] findMany failed: ${error.message}`);
-    return (data as Row[]).map(rowToLead);
+    return (data as SupabaseLeadRow[]).map(rowToLead);
   }
 
   async findById(id: string): Promise<ContactLead | null> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabaseClient
       .from("contact_leads")
       .select("*")
       .eq("id", id)
       .maybeSingle();
 
     if (error) throw new Error(`[Supabase] findById failed: ${error.message}`);
-    return data ? rowToLead(data as Row) : null;
+    return data ? rowToLead(data as SupabaseLeadRow) : null;
   }
 
   async updateStatus(
     id: string,
     status: ContactLead["status"]
   ): Promise<ContactLead> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabaseClient
       .from("contact_leads")
       .update({ status })
       .eq("id", id)
@@ -86,14 +63,14 @@ export class SupabaseCustomerRepository implements CustomerRepository {
       .single();
 
     if (error) throw new Error(`[Supabase] updateStatus failed: ${error.message}`);
-    return rowToLead(data as Row);
+    return rowToLead(data as SupabaseLeadRow);
   }
 
   async updateNotificationStatus(
     id: string,
     notification_status: ContactLead["notificationStatus"]
   ): Promise<ContactLead> {
-    const { data, error } = await supabase
+    const { data, error } = await this.supabaseClient
       .from("contact_leads")
       .update({ notification_status })
       .eq("id", id)
@@ -104,11 +81,11 @@ export class SupabaseCustomerRepository implements CustomerRepository {
       throw new Error(
         `[Supabase] updateNotificationStatus failed: ${error.message}`
       );
-    return rowToLead(data as Row);
+    return rowToLead(data as SupabaseLeadRow);
   }
 
   async delete(id: string): Promise<void> {
-    const { error } = await supabase
+    const { error } = await this.supabaseClient
       .from("contact_leads")
       .delete()
       .eq("id", id);

@@ -1,5 +1,5 @@
 export * from "./types";
-export * from "./schemas/contact.schema";
+export * from "../../domain/contact/contact.schema";
 export * from "./api/contact.client";
 export * from "./api/lead.client";
 export * from "./hooks/useCreateContact";

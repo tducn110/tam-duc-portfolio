@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { contactCreateSchema } from "./contact.schema";
+import { contactCreateSchema } from "@/domain/contact/contact.schema";
 
 describe("contactCreateSchema", () => {
   it("accepts valid contact input", () => {

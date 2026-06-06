@@ -9,7 +9,7 @@ export function AnimatedSection({
 }: {
   id?: string;
   className?: string;
-  variants?: any; // kept for backwards compatibility but unused
+  variants?: unknown; // kept for backwards compatibility but unused
   children: React.ReactNode;
 }) {
   const container = useRef<HTMLDivElement>(null);

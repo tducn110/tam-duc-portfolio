@@ -45,9 +45,6 @@ export default defineConfig({
     alias: {
       // Alias @ to the src directory
       '@': path.resolve(__dirname, './src'),
-      // Bridge: old app/lib/* → shared/lib/* — removes need to migrate 24 files
-      '@/app/lib/tokens': path.resolve(__dirname, './src/shared/lib/tokens'),
-      '@/app/lib/motion': path.resolve(__dirname, './src/shared/lib/motion'),
     },
   },
 
@@ -76,6 +73,12 @@ export default defineConfig({
             }
             if (id.includes('@supabase')) {
               return 'vendor-supabase';
+            }
+            if (id.includes('three') || id.includes('@react-three')) {
+              return 'vendor-three';
+            }
+            if (id.includes('matter-js')) {
+              return 'vendor-matter';
             }
             return 'vendor';
           }

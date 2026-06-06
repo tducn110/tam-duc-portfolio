@@ -6,6 +6,7 @@ import { LeadDetailDrawer } from "@/features/contact/components/LeadDetailDrawer
 import type { ContactLead } from "@/features/contact/types";
 import { Section, SectionHeading, Button } from "@/shared/ui";
 import { fonts } from "@/shared/lib/tokens";
+import { adminDashboardContent } from "../data/adminDashboard";
 
 export default function AdminLeadsPage() {
   const { leads, loading, error, refetch } = useLeads();
@@ -35,23 +36,23 @@ export default function AdminLeadsPage() {
               className="inline-flex items-center gap-2 text-xs text-[#6b6b6b] hover:text-[#af50ff] uppercase transition-colors"
               style={{ fontFamily: fonts.mono, letterSpacing: "0.15em" }}
             >
-              <ArrowLeft size={14} /> Back to site
+              <ArrowLeft size={14} /> {adminDashboardContent.backToSite}
             </a>
             <div
               className="text-[10px] text-[#6b6b6b] uppercase"
               style={{ fontFamily: fonts.mono, letterSpacing: "0.2em" }}
             >
-              System · CRM · Admin Center
+              {adminDashboardContent.systemAdminCenter}
             </div>
           </div>
 
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-5 mb-10">
             <SectionHeading
-              eyebrow="Customer Management"
+              eyebrow={adminDashboardContent.headingEyebrow}
               eyebrowColor="violet"
-              title="Customer"
-              italicWord="leads."
-              description="Review request details, update client connection states, manage budget scopes, or log direct service actions."
+              title={adminDashboardContent.headingTitle}
+              italicWord={adminDashboardContent.headingItalic}
+              description={adminDashboardContent.headingDesc}
             />
 
             <div className="flex items-center gap-3">
@@ -62,12 +63,12 @@ export default function AdminLeadsPage() {
                 disabled={loading}
                 iconLeft={<RefreshCw size={14} className={loading ? "animate-spin" : ""} />}
               >
-                Refresh
+                {adminDashboardContent.btnRefresh}
               </Button>
               <div className="frost border border-white/[0.08] rounded-lg px-4 py-2.5 flex items-center gap-2 text-sm text-[#f7f9fa] backdrop-blur-md">
                 <Users size={16} className="text-[#af50ff]" />
                 <span style={{ fontFamily: fonts.mono }}>
-                  Total: {leads.length}
+                  {adminDashboardContent.totalLabel}{leads.length}
                 </span>
               </div>
             </div>
@@ -97,3 +98,4 @@ export default function AdminLeadsPage() {
     </div>
   );
 }
+

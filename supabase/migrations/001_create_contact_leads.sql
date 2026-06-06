@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS contact_leads (
   budget              TEXT,
   message             TEXT        NOT NULL,
   status              TEXT        NOT NULL DEFAULT 'new'
-                      CHECK (status IN ('new','contacted','closed','rejected')),
+                      CHECK (status IN ('new','contacted','closed','rejected','archived')),
   notification_status TEXT        NOT NULL DEFAULT 'pending'
                       CHECK (notification_status IN ('pending','sent','failed')),
   created_at          TIMESTAMPTZ NOT NULL DEFAULT now(),
@@ -33,7 +33,7 @@ CREATE TRIGGER set_updated_at
   BEFORE UPDATE ON contact_leads
   FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- ── Row Level Security ─────────────────────────────────────────────────────────
+-- Row Level Security
 ALTER TABLE contact_leads ENABLE ROW LEVEL SECURITY;
 
 -- Public: allow inserting new leads (contact form — anon key)
@@ -41,21 +41,9 @@ CREATE POLICY "anon_insert_leads"
   ON contact_leads FOR INSERT TO anon
   WITH CHECK (true);
 
--- Public: allow reading leads list (admin panel — anon key, secure with auth later)
--- TODO: replace anon with authenticated role once Supabase Auth is added
-CREATE POLICY "anon_read_leads"
-  ON contact_leads FOR SELECT TO anon
-  USING (true);
-
--- Public: allow status updates (mark lead as contacted/closed from admin)
-CREATE POLICY "anon_update_leads"
-  ON contact_leads FOR UPDATE TO anon
-  USING (true);
-
--- Public: allow deleting leads
-CREATE POLICY "anon_delete_leads"
-  ON contact_leads FOR DELETE TO anon
-  USING (true);
+-- Note: SELECT, UPDATE, and DELETE policies for anon are omitted.
+-- All admin management operations go through the Serverless API secure proxy
+-- using the Supabase service_role key after verifying the admin JWT.
 
 -- ── Indexes ────────────────────────────────────────────────────────────────────
 CREATE INDEX IF NOT EXISTS idx_contact_leads_status     ON contact_leads(status);

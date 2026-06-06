@@ -1,254 +1,200 @@
-import { motion } from "motion/react";
-import { fonts, colorMap, gradients } from "../../lib/tokens";
-import {
-  skills,
-  techChips,
-  tierDots,
-  specialTraits,
-  type Tier,
-} from "../../data/portfolio";
+import { skills, tierDots, type Tier } from "@/features/portfolio/data/portfolio.data";
+import { sectionsContent } from "../../data/sections";
 import { links } from "../../lib/links";
-import { SectionHeading } from "../shared/SectionHeading";
-import { AnimatedSection } from "../shared/AnimatedSection";
-import { staggerContainer, fadeUp } from "../../lib/motion";
-import type { ColorKey } from "../../lib/tokens";
+import { SectionHeading } from "@/shared/ui";
+import { useRef } from "react";
+import gsap from "gsap";
+import { useGSAP } from "@gsap/react";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { LinuxTerminal } from "./LinuxTerminal";
+import { Section, Container, Surface, Typography, StaggerGroup } from "@/shared/ui";
+import { SkillRow } from "./cards/SkillRow";
+import { TechPhysicsCanvas } from "./TechPhysicsCanvas";
+import { SpecialTraitsBento } from "./SpecialTraitsBento";
 
-function SkillRow({
-  label,
-  tier,
-  color,
-  evidence,
-}: {
-  label: string;
-  tier: Tier;
-  color: ColorKey;
-  evidence: string;
-}) {
-  const c = colorMap[color];
-  const dots = tierDots[tier];
 
-  return (
-    <motion.div variants={fadeUp}>
-      <div className="flex justify-between items-baseline mb-1.5">
-        <span
-          className="text-[#f7f9fa]"
-          style={{ fontFamily: fonts.body, fontWeight: 500, fontSize: "0.92rem" }}
-        >
-          {label}
-        </span>
-        <span
-          className={`text-[10px] ${c.text} px-2 py-0.5 rounded-full ${c.bg} border ${c.border}`}
-          style={{ fontFamily: fonts.mono, letterSpacing: "0.2em", fontWeight: 400, textTransform: "uppercase" }}
-        >
-          {tier}
-        </span>
-      </div>
-      <div className="flex items-center gap-3">
-        <div className="flex gap-1">
-          {[1, 2, 3, 4, 5].map((i) => (
-            <span
-              key={i}
-              className={`h-1 w-8 rounded-full ${
-                i <= dots ? c.bar : "bg-[#f7f9fa]/[0.08]"
-              }`}
-              style={i <= dots ? { boxShadow: `0 0 6px ${c.glow}` } : undefined}
-            />
-          ))}
-        </div>
-        <span
-          className="text-[10px] text-[#6b6b6b] truncate"
-          style={{ fontFamily: fonts.mono, letterSpacing: "0.06em" }}
-        >
-          {evidence}
-        </span>
-      </div>
-    </motion.div>
-  );
-}
+gsap.registerPlugin(ScrollTrigger);
 
+const skillGroups = [
+  {
+    title: "Frontend craft",
+    note: "UI stack + product interface work",
+    items: ["TypeScript · React · Next.js", "UI · Tailwind · Design Systems"],
+  },
+  {
+    title: "Backend systems",
+    note: "API, data, and persistence",
+    items: ["API & Backend (Hono, Node)", "PostgreSQL · Drizzle ORM"],
+  },
+  {
+    title: "Architecture & workflow",
+    note: "How projects get planned and shipped",
+    items: ["AI-Augmented Workflow", "System Architecture"],
+  },
+  {
+    title: "Game logic",
+    note: "Interactive systems and competitive thinking",
+    items: ["Unity · C# · ShaderLab", "Game Sense (TFT / LoL)"],
+  },
+] as const;
 export function SkillsSection() {
+  const sContent = sectionsContent.skills;
+  const skillByLabel = new Map(skills.map((skill) => [skill.label, skill]));
+  const groupedSkills = skillGroups.map((group) => ({
+    ...group,
+    skills: group.items
+      .map((label) => skillByLabel.get(label))
+      .filter((skill): skill is (typeof skills)[number] => Boolean(skill)),
+  }));
+  
+  const sectionRef = useRef<HTMLDivElement>(null);
+  const leftColRef = useRef<HTMLDivElement>(null);
+  const rightColRef = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    // 1. Column Parallax on scroll
+    gsap.to(leftColRef.current, {
+      y: -40,
+      ease: "none",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+      }
+    });
+
+    gsap.to(rightColRef.current, {
+      y: 40,
+      ease: "none",
+      scrollTrigger: {
+        trigger: sectionRef.current,
+        start: "top bottom",
+        end: "bottom top",
+        scrub: true,
+      }
+    });
+
+  }, { scope: sectionRef });
+
   return (
-    <AnimatedSection id="skills" className="py-24 md:py-32 relative">
-      <div className="absolute top-20 right-0 w-[460px] h-[460px] rounded-full bg-[#af50ff]/12 blur-[130px] pointer-events-none" />
-      <div className="max-w-[1200px] mx-auto px-5 md:px-8 relative">
+    <Section id="skills" ref={sectionRef as any}>
+      <div className="absolute top-20 right-0 w-[460px] h-[460px] rounded-full bg-violet/12 blur-[130px] pointer-events-none" />
+      <Container className="relative">
         <div className="mb-14 md:mb-16 text-center">
           <SectionHeading
-            eyebrow="My current build"
+            eyebrow={sContent.eyebrow}
             eyebrowColor="violet"
-            title="Capability,"
-            italicWord="not bragging."
+            title={sContent.title}
+            italicWord={sContent.italicWord}
             align="center"
           />
-          <p
-            className="text-[#f0f0f0]/65 mt-6 mx-auto"
-            style={{ fontFamily: fonts.body, fontSize: "1rem", lineHeight: 1.65, maxWidth: "58ch" }}
+          <Typography
+            as="p"
+            variant="body"
+            color="ghost"
+            className="mt-6 mx-auto opacity-65 !leading-[1.65] max-w-[58ch]"
           >
-            Tiers based on what I actually ship on{" "}
+            {sContent.descPart1}
             <a
               href={links.github}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#af50ff] hover:underline underline-offset-4"
-              style={{ fontWeight: 500 }}
+              className="text-violet hover:underline underline-offset-4 font-medium"
             >
-              github.com/tducn110
-            </a>{" "}
-            — not self-rated percentages.
-          </p>
+              {sContent.descLink}
+            </a>
+            {sContent.descPart2}
+          </Typography>
         </div>
 
         <div className="grid md:grid-cols-2 gap-6 md:gap-8">
-          <motion.div
-            variants={staggerContainer}
-            initial="hidden"
-            whileInView="show"
-            viewport={{ once: true, margin: "-60px" }}
-            className="frost p-6 md:p-8"
-            style={{
-              borderRadius: "19.2px",
-              boxShadow: "0 1px 0 rgba(247,249,250,0.06) inset",
-            }}
-          >
-            <div className="flex items-center justify-between mb-6">
-              <span
-                className="text-[10px] text-[#af50ff]"
-                style={{ fontFamily: fonts.mono, letterSpacing: "0.22em", fontWeight: 400, textTransform: "uppercase" }}
-              >
-                /// Capability matrix
-              </span>
-              <span
-                className="text-[10px] text-[#6b6b6b]"
-                style={{ fontFamily: fonts.mono, letterSpacing: "0.12em" }}
-              >
-                v1.2 · 2026
-              </span>
-            </div>
-            <div className="flex flex-col gap-4">
-              {skills.map((s) => (
-                <SkillRow key={s.label} label={s.label} tier={s.tier} color={s.color} evidence={s.evidence} />
-              ))}
-            </div>
-            <div
-              className="flex flex-wrap gap-x-4 gap-y-1 pt-5 mt-5 border-t border-[#f7f9fa]/[0.08] text-[10px] text-[#6b6b6b]"
-              style={{ fontFamily: fonts.mono, letterSpacing: "0.08em" }}
-            >
-              <span><span className="text-[#af50ff]">●●●●●</span> Core</span>
-              <span><span className="text-[#af50ff]">●●●●</span> Strong</span>
-              <span><span className="text-[#af50ff]">●●●</span> Active</span>
-              <span><span className="text-[#af50ff]">●●</span> Growing</span>
-              <span><span className="text-[#af50ff]">●</span> Exploring</span>
-            </div>
-          </motion.div>
-
-          <div className="flex flex-col gap-6">
-            <div
-              className="frost p-6 md:p-8"
-              style={{
-                borderRadius: "19.2px",
-                boxShadow: "0 1px 0 rgba(247,249,250,0.06) inset",
-              }}
-            >
-              <div
-                className="text-[10px] text-[#6c4bd6] mb-5"
-                style={{ fontFamily: fonts.mono, letterSpacing: "0.22em", fontWeight: 400, textTransform: "uppercase" }}
-              >
-                /// Tech stack
+          <div ref={leftColRef}>
+            <Surface variant="frost">
+              <StaggerGroup once viewportMargin="-60px">
+                <div className="flex items-center justify-between mb-6">
+                <Typography variant="monoEyebrow" className="!text-[10px] text-violet !tracking-[0.22em] font-normal">
+                  {sContent.matrixEyebrow}
+                </Typography>
+                <Typography variant="monoEyebrow" className="!text-[10px] text-slate !tracking-[0.12em] normal-case">
+                  {sContent.matrixVersion}
+                </Typography>
               </div>
-              <motion.div
-                variants={staggerContainer}
-                initial="hidden"
-                whileInView="show"
-                viewport={{ once: true, margin: "-60px" }}
-                className="flex flex-wrap gap-1.5"
-              >
-                {techChips.map((chip, i) => {
-                  const colors: ColorKey[] = ["violet", "cosmic", "mauve", "steel", "slate"];
-                  const color = colors[i % colors.length];
-                  const c = colorMap[color];
-                  return (
-                    <motion.span
-                      key={chip}
-                      variants={fadeUp}
-                      className={`px-3 py-1 rounded-full text-[11px] border ${c.border} ${c.bg} ${c.text} backdrop-blur-sm`}
-                      style={{ fontFamily: fonts.mono, fontWeight: 400 }}
-                    >
-                      {chip}
-                    </motion.span>
-                  );
-                })}
-              </motion.div>
-            </div>
-
-            <div
-              className="p-6 md:p-8 relative overflow-hidden border border-[#af50ff]/25"
-              style={{
-                borderRadius: "19.2px",
-                background: gradients.cosmicB,
-                boxShadow: "0 24px 64px -16px rgba(64,24,96,0.6)",
-              }}
-            >
-              <div
-                className="absolute -top-20 -right-20 w-56 h-56 rounded-full blur-3xl opacity-60"
-                style={{ background: "radial-gradient(circle, rgba(175,80,255,0.45), transparent)" }}
-              />
-              <div
-                className="text-[10px] text-[#af50ff] mb-5 relative"
-                style={{ fontFamily: fonts.mono, letterSpacing: "0.22em", fontWeight: 400, textTransform: "uppercase" }}
-              >
-                /// Special traits
-              </div>
-              <div className="flex flex-col gap-3.5 relative">
-                {specialTraits.map((t) => {
-                  const c = colorMap[t.color];
-                  return (
-                    <div key={t.trait} className="flex items-start gap-3">
-                      <div
-                        className={`mt-0.5 w-8 h-8 rounded-lg ${c.bg} border ${c.border} ${c.text} flex items-center justify-center flex-shrink-0 backdrop-blur-sm`}
-                      >
-                        {t.icon}
-                      </div>
-                      <div className="flex-1">
-                        <div
-                          className="text-[#f7f9fa] text-base"
-                          style={{ fontFamily: fonts.display, fontWeight: 400, fontStyle: "italic", letterSpacing: "-0.015em" }}
-                        >
-                          {t.trait}
-                        </div>
-                        <div
-                          className="text-[#f0f0f0]/60 text-[12px]"
-                          style={{ fontFamily: fonts.body }}
-                        >
-                          {t.desc}
-                        </div>
-                      </div>
+              <div className="grid gap-3">
+                {groupedSkills.map((group) => (
+                  <div
+                    key={group.title}
+                    className="rounded-xl border border-whisper/10 bg-whisper/[0.025] p-3.5 transition-colors duration-300 hover:border-violet/20 hover:bg-whisper/[0.04]"
+                  >
+                    <div className="flex flex-col gap-1 border-b border-whisper/10 pb-3 sm:flex-row sm:items-end sm:justify-between">
+                      <Typography variant="monoEyebrow" className="!text-[10px] text-whisper !tracking-[0.16em] font-normal">
+                        {group.title}
+                      </Typography>
+                      <Typography variant="bodySm" className="text-slate !text-[12px] !leading-[1.35]">
+                        {group.note}
+                      </Typography>
                     </div>
-                  );
-                })}
+                    <div className="mt-3 flex flex-col gap-2">
+                      {group.skills.map((s) => (
+                        <SkillRow key={s.label} label={s.label} tier={s.tier} color={s.color} evidence={s.evidence} />
+                      ))}
+                    </div>
+                  </div>
+                ))}
               </div>
+              <div className="flex flex-wrap gap-x-4 gap-y-1 pt-5 mt-5 border-t border-whisper/10">
+                {(["Core", "Strong", "Active", "Growing", "Exploring"] as Tier[]).map((t) => (
+                  <Typography as="span" variant="monoEyebrow" className="!text-[10px] text-slate !tracking-[0.08em] normal-case" key={t}>
+                    <span className="text-violet">{"●".repeat(tierDots[t])}</span> {t}
+                  </Typography>
+                ))}
+              </div>
+            </StaggerGroup>
+          </Surface>
+          </div>
+
+          <div ref={rightColRef} className="flex flex-col gap-6">
+            <Surface variant="frost" className="p-1">
+              <div className="p-4 pb-0 flex justify-between items-center z-10 relative pointer-events-none">
+                <Typography variant="monoEyebrow" className="!text-[10px] text-cosmic-a !tracking-[0.22em] font-normal">
+                  {sContent.techEyebrow}
+                </Typography>
+                <div className="flex gap-1.5 items-center">
+                  <span className="w-1.5 h-1.5 rounded-full bg-violet animate-pulse" />
+                  <Typography variant="monoEyebrow" className="!text-[9px] text-violet !tracking-[0.1em] font-normal opacity-70">
+                    PHYSICS ACTIVE
+                  </Typography>
+                </div>
+              </div>
+              <TechPhysicsCanvas />
+            </Surface>
+
+            {/* Special Traits Bento */}
+            <div className="mt-2">
+              <Typography variant="monoEyebrow" className="!text-[10px] text-violet mb-5 !tracking-[0.22em] font-normal pl-2">
+                {sContent.traitsEyebrow}
+              </Typography>
+              <SpecialTraitsBento />
             </div>
           </div>
         </div>
 
-        {/* Interactive Linux Terminal */}
         <div className="mt-12 md:mt-16 text-center">
           <div className="mb-6">
-            <span
-              className="text-[10px] text-[#af50ff]"
-              style={{ fontFamily: fonts.mono, letterSpacing: "0.22em", fontWeight: 400, textTransform: "uppercase" }}
-            >
-              /// Interactive System Shell
-            </span>
-            <p
-              className="text-[#f0f0f0]/50 mt-2 text-[12px]"
-              style={{ fontFamily: fonts.body }}
-            >
-              Click inside the window and type commands like <span className="text-[#a78bfa] font-mono">help</span> or <span className="text-[#a78bfa] font-mono">neofetch</span>.
-            </p>
+            <Typography variant="monoEyebrow" className="!text-[10px] text-violet !tracking-[0.22em] font-normal">
+              {sContent.shellEyebrow}
+            </Typography>
+            <Typography variant="bodySm" color="ghost" className="opacity-50 mt-2 !text-[12px]">
+              {sContent.shellDescPart1}
+              <span className="text-cosmic-a font-mono">{sContent.shellCommandHelp}</span>
+              {sContent.shellDescPart2}
+              <span className="text-cosmic-a font-mono">{sContent.shellCommandNeofetch}</span>
+              {sContent.shellDescPart3}
+            </Typography>
           </div>
           <LinuxTerminal />
         </div>
-      </div>
-    </AnimatedSection>
+      </Container>
+    </Section>
   );
 }

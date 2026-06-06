@@ -44,7 +44,7 @@ describe("Button", () => {
     render(<Button>Primary</Button>);
     const btn = screen.getByRole("button");
     // Primary has the violet bg class
-    expect(btn.className).toContain("bg-[#af50ff]");
+    expect(btn.className).toContain("bg-violet");
   });
 
   it("applies secondary variant class", () => {
@@ -54,7 +54,7 @@ describe("Button", () => {
 
   it("applies ghost variant class", () => {
     render(<Button variant="ghost">Ghost</Button>);
-    expect(screen.getByRole("button").className).toContain("hover:text-[#af50ff]");
+    expect(screen.getByRole("button").className).toContain("hover:text-violet");
   });
 
   it("renders iconLeft and iconRight", () => {

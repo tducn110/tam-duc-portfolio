@@ -9,3 +9,7 @@ export * from "./Badge/Badge";
 export * from "./Chip/Chip";
 export * from "./IconBox/IconBox";
 export * from "./Form";
+export * from "./Container/Container";
+export * from "./Surface/Surface";
+export * from "./Typography/Typography";
+export * from "./StaggerGroup/StaggerGroup";

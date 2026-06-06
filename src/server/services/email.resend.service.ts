@@ -14,7 +14,17 @@ const STATUS_COLOR: Record<ContactLead["status"], string> = {
   contacted: "#3b82f6",
   closed:    "#22c55e",
   rejected:  "#ef4444",
+  archived:  "#6b6b6b",
 };
+
+function escapeHtml(value: unknown): string {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#039;");
+}
 
 function buildEmailHtml(lead: ContactLead): string {
   const service = SERVICE_LABELS[lead.serviceType] ?? lead.serviceType;
@@ -24,6 +34,13 @@ function buildEmailHtml(lead: ContactLead): string {
     dateStyle: "short",
     timeStyle: "short",
   });
+
+  const safeName = escapeHtml(lead.name);
+  const safeEmail = escapeHtml(lead.email);
+  const safePhone = lead.phone ? escapeHtml(lead.phone) : undefined;
+  const safeBudget = lead.budget ? escapeHtml(lead.budget) : undefined;
+  const safeMessage = escapeHtml(lead.message);
+  const safeStatus = escapeHtml(lead.status);
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -63,22 +80,22 @@ function buildEmailHtml(lead: ContactLead): string {
               <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
                 <tr>
                   <td>
-                    <div style="font-size:20px;font-weight:700;color:#f7f9fa;letter-spacing:-0.02em;">${lead.name}</div>
-                    <div style="font-size:13px;color:#f0f0f080;margin-top:2px;">${lead.email}</div>
+                    <div style="font-size:20px;font-weight:700;color:#f7f9fa;letter-spacing:-0.02em;">${safeName}</div>
+                    <div style="font-size:13px;color:#f0f0f080;margin-top:2px;">${safeEmail}</div>
                   </td>
                   <td align="right">
-                    <span style="display:inline-block;background:${color}20;border:1px solid ${color}50;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:0.08em;">${lead.status}</span>
+                    <span style="display:inline-block;background:${color}20;border:1px solid ${color}50;border-radius:6px;padding:4px 12px;font-size:11px;font-weight:700;color:${color};text-transform:uppercase;letter-spacing:0.08em;">${safeStatus}</span>
                   </td>
                 </tr>
               </table>
 
               <!-- Details grid -->
               <table width="100%" cellpadding="0" cellspacing="0" style="background:#0d0d0d;border-radius:12px;border:1px solid #ffffff0d;overflow:hidden;margin-bottom:20px;">
-                ${lead.phone ? `
+                ${safePhone ? `
                 <tr>
                   <td style="padding:12px 16px;border-bottom:1px solid #ffffff0d;">
                     <span style="font-size:11px;color:#ffffff50;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:2px;">Phone</span>
-                    <span style="font-size:14px;color:#f0f0f0;font-weight:500;">${lead.phone}</span>
+                    <span style="font-size:14px;color:#f0f0f0;font-weight:500;">${safePhone}</span>
                   </td>
                 </tr>` : ""}
                 <tr>
@@ -87,17 +104,17 @@ function buildEmailHtml(lead: ContactLead): string {
                     <span style="font-size:14px;color:#af50ff;font-weight:600;">${service}</span>
                   </td>
                 </tr>
-                ${lead.budget ? `
+                ${safeBudget ? `
                 <tr>
                   <td style="padding:12px 16px;border-bottom:1px solid #ffffff0d;">
                     <span style="font-size:11px;color:#ffffff50;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:2px;">Budget</span>
-                    <span style="font-size:14px;color:#22c55e;font-weight:600;">${lead.budget}</span>
+                    <span style="font-size:14px;color:#22c55e;font-weight:600;">${safeBudget}</span>
                   </td>
                 </tr>` : ""}
                 <tr>
                   <td style="padding:12px 16px;">
                     <span style="font-size:11px;color:#ffffff50;text-transform:uppercase;letter-spacing:0.1em;display:block;margin-bottom:6px;">Message</span>
-                    <span style="font-size:14px;color:#f0f0f0;line-height:1.6;">${lead.message}</span>
+                    <span style="font-size:14px;color:#f0f0f0;line-height:1.6;">${safeMessage}</span>
                   </td>
                 </tr>
               </table>
@@ -106,9 +123,9 @@ function buildEmailHtml(lead: ContactLead): string {
               <table width="100%" cellpadding="0" cellspacing="0">
                 <tr>
                   <td align="center">
-                    <a href="mailto:${lead.email}"
+                    <a href="mailto:${safeEmail}"
                        style="display:inline-block;background:linear-gradient(135deg,#af50ff,#6c4bd6);color:#fff;text-decoration:none;padding:12px 28px;border-radius:10px;font-size:14px;font-weight:700;letter-spacing:0.02em;">
-                      Reply to ${lead.name.split(" ")[0]}
+                      Reply to ${safeName.split(" ")[0]}
                     </a>
                   </td>
                 </tr>
@@ -134,40 +151,45 @@ function buildEmailHtml(lead: ContactLead): string {
 
 export class ResendEmailService implements EmailService {
   private resend: Resend;
-  // ⚠️  Resend free tier: until a domain is verified, emails can only be sent
-  //     to the account owner address (duc.nguyen240205@vnuk.edu.vn).
-  //     Add VITE_LEAD_EMAIL to .env to override (e.g. after domain verification).
-  private readonly to = (import.meta.env.VITE_LEAD_EMAIL as string | undefined)
-    ?? "duc.nguyen240205@vnuk.edu.vn";
+  private readonly to: string;
   private readonly from: string;
 
   constructor(apiKey: string, fromAddress?: string) {
     this.resend = new Resend(apiKey);
+    this.to = (typeof process !== "undefined" ? process.env.LEAD_EMAIL : undefined)
+      || (import.meta.env.VITE_LEAD_EMAIL as string | undefined)
+      || "duc.nguyen240205@vnuk.edu.vn";
     this.from = fromAddress
-      ?? (import.meta.env.VITE_RESEND_FROM as string | undefined)
-      ?? "onboarding@resend.dev";
+      || (typeof process !== "undefined" ? process.env.RESEND_FROM : undefined)
+      || (import.meta.env.VITE_RESEND_FROM as string | undefined)
+      || "onboarding@resend.dev";
   }
 
   async sendLeadNotification(lead: ContactLead): Promise<void> {
     const service = SERVICE_LABELS[lead.serviceType] ?? lead.serviceType;
+    const safeName = escapeHtml(lead.name);
+    const safeEmail = escapeHtml(lead.email);
+    const safePhone = lead.phone ? escapeHtml(lead.phone) : undefined;
+    const safeBudget = lead.budget ? escapeHtml(lead.budget) : undefined;
+    const safeMessage = escapeHtml(lead.message);
 
     const { error } = await this.resend.emails.send({
       from: this.from,
       to: this.to,
-      replyTo: lead.email,
-      subject: `🎯 New Lead: ${lead.name} — ${service}`,
+      replyTo: safeEmail,
+      subject: `🎯 New Lead: ${safeName} — ${service}`,
       html: buildEmailHtml(lead),
       text: [
         `New lead from tamduc.dev`,
         `─────────────────────────`,
-        `Name:    ${lead.name}`,
-        `Email:   ${lead.email}`,
-        lead.phone ? `Phone:   ${lead.phone}` : null,
+        `Name:    ${safeName}`,
+        `Email:   ${safeEmail}`,
+        safePhone ? `Phone:   ${safePhone}` : null,
         `Service: ${service}`,
-        lead.budget ? `Budget:  ${lead.budget}` : null,
+        safeBudget ? `Budget:  ${safeBudget}` : null,
         ``,
         `Message:`,
-        lead.message,
+        safeMessage,
         ``,
         `Lead ID: ${lead.id}`,
       ]

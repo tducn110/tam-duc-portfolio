@@ -17,10 +17,10 @@ export function Card({
   return (
     <div
       className={cn(
-        "relative p-6 overflow-hidden transition-all duration-300 border text-[#f7f9fa]",
-        variant === "frost" && "frost border-[#f7f9fa]/[0.08]",
-        variant === "frostStrong" && "frost-strong border-[#f7f9fa]/[0.08]",
-        variant === "cosmic" && "bg-cosmic-gradient border-[#af50ff]/25",
+        "relative p-6 overflow-hidden transition-all duration-300 border text-whisper",
+        variant === "frost" && "frost border-whisper/10",
+        variant === "frostStrong" && "frost-strong border-whisper/10",
+        variant === "cosmic" && "bg-cosmic-b border-violet/25",
         hoverable && "hover:-translate-y-1.5 hover:shadow-2xl",
         className
       )}

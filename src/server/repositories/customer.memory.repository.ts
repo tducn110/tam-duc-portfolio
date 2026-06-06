@@ -1,6 +1,6 @@
-import type { ContactLead } from "@/features/contact/types";
-import type { ContactCreateInput } from "@/features/contact/schemas/contact.schema";
-import type { CustomerRepository } from "./customer.repository";
+import type { ContactLead } from "@/domain/contact/contact.types";
+import type { ContactCreateInput } from "@/domain/contact/contact.schema";
+import type { CustomerRepository } from "@/domain/contact/contact.repository";
 
 export class MemoryCustomerRepository implements CustomerRepository {
   // Instance-level store — each new() gets its own isolated array.
@@ -26,7 +26,9 @@ export class MemoryCustomerRepository implements CustomerRepository {
   }
 
   async findMany(): Promise<ContactLead[]> {
-    return [...this.store];
+    return this.store
+      .filter((l) => l.status !== "archived")
+      .map((l) => ({ ...l }));
   }
 
   async findById(id: string): Promise<ContactLead | null> {

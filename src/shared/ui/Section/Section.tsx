@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { motion, type Variants } from "motion/react";
 import { sectionReveal } from "@/shared/lib/motion";
 import { cn } from "@/shared/lib/cn";
@@ -9,7 +10,7 @@ export interface SectionProps extends Omit<React.HTMLAttributes<HTMLElement>, "o
   animate?: boolean;
 }
 
-export function Section({
+export const Section = forwardRef<HTMLElement, SectionProps>(function Section({
   id,
   className,
   variants = sectionReveal,
@@ -18,10 +19,10 @@ export function Section({
   animate = true,
   children,
   ...props
-}: SectionProps) {
+}: SectionProps, ref) {
   if (!animate) {
     return (
-      <section id={id} className={cn("py-24 md:py-32 relative", className)} {...props}>
+      <section ref={ref} id={id} className={cn("py-24 md:py-32 relative", className)} {...props}>
         {children}
       </section>
     );
@@ -29,6 +30,7 @@ export function Section({
 
   return (
     <motion.section
+      ref={ref}
       id={id}
       className={cn("py-24 md:py-32 relative", className)}
       initial="hidden"
@@ -40,4 +42,4 @@ export function Section({
       {children}
     </motion.section>
   );
-}
+});

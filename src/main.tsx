@@ -6,10 +6,4 @@ import "./styles/index.css";
 
 gsap.registerPlugin(ScrollTrigger);
 
-// Mock server only runs in dev — stripped from production bundle by Vite tree-shaking
-if (import.meta.env.DEV) {
-  const { setupMockServer } = await import("./server/mock.server");
-  setupMockServer();
-}
-
 createRoot(document.getElementById("root")!).render(<App />);

@@ -10,4 +10,5 @@ if (!supabaseUrl || !supabaseKey) {
   );
 }
 
-export const supabase = createClient<Database>(supabaseUrl, supabaseKey);
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const supabase = createClient<Database>(supabaseUrl, supabaseKey) as any;
