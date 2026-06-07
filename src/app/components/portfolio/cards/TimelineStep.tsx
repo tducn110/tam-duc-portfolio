@@ -1,4 +1,5 @@
-import { motion } from "motion/react";
+import { useRef } from "react";
+import { motion, useScroll, useTransform } from "motion/react";
 import { colorMap } from "@/shared/lib/tokens";
 import { type TimelineStep as TimelineStepType } from "@/features/portfolio/data/portfolio.data";
 import { Surface, Typography } from "@/shared/ui";
@@ -8,9 +9,20 @@ export function TimelineStep({ step, index, total }: { step: TimelineStepType; i
   const c = colorMap[step.color];
   const isRight = index % 2 === 0;
   const { ref, onMouseMove, onMouseLeave } = useTilt(3);
+  const stepRef = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({
+    target: stepRef,
+    offset: ["start end", "end start"],
+  });
+  const cardY = useTransform(
+    scrollYProgress,
+    [0, 1],
+    isRight ? ["28px", "-24px"] : ["18px", "-34px"]
+  );
 
   return (
     <motion.div
+      ref={stepRef}
       initial={{ opacity: 0, y: 30 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-100px" }}
@@ -36,15 +48,16 @@ export function TimelineStep({ step, index, total }: { step: TimelineStepType; i
           }}
         />
       </div>
-      <div
+      <motion.div
+        style={{ y: cardY }}
         className={`md:w-[calc(50%-2.5rem)] ${
           isRight ? "md:mr-auto md:pr-6" : "md:ml-auto md:pl-6"
         } flex-1 md:flex-none`}
       >
         <div
-          ref={ref as any}
-          onMouseMove={onMouseMove as any}
-          onMouseLeave={onMouseLeave as any}
+          ref={ref}
+          onMouseMove={onMouseMove}
+          onMouseLeave={onMouseLeave}
           className="will-change-transform"
         >
           <Surface variant="frost" className="p-6 relative overflow-hidden spotlight-border-card transition-colors duration-500 group-hover:bg-midnight/60">
@@ -84,7 +97,7 @@ export function TimelineStep({ step, index, total }: { step: TimelineStepType; i
             </Typography>
           </Surface>
         </div>
-      </div>
+      </motion.div>
       <div className="hidden md:block md:w-[calc(50%-2.5rem)]" />
     </motion.div>
   );
