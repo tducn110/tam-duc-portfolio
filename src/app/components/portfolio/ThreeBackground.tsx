@@ -139,7 +139,7 @@ export function ThreeBackground() {
     camera.position.set(0, 0, 95);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setClearColor(0x090909, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -188,7 +188,7 @@ export function ThreeBackground() {
 
     // ─── 3. Breathing Star Particles (Nebula) ─────────────────────────
     const isMobile = window.innerWidth < 768;
-    const particleCount = isMobile ? 300 : 900;
+    const particleCount = isMobile ? 180 : 520;
 
     const starGeometry = new THREE.BufferGeometry();
     const positions = new Float32Array(particleCount * 3);
@@ -288,12 +288,22 @@ export function ThreeBackground() {
 
     // ─── Rendering Loop ───────────────────────────────────────────────
     let animationFrameId = 0;
-    let lastTime = performance.now();
+    let lastRender = 0;
+    let hidden = document.hidden;
+    const targetFrameMs = 1000 / 30;
 
-    const animate = () => {
+    const handleVisibility = () => {
+      hidden = document.hidden;
+      if (!hidden) lastRender = 0;
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    const animate = (now = performance.now()) => {
       animationFrameId = requestAnimationFrame(animate);
+      if (hidden || now - lastRender < targetFrameMs) return;
+      lastRender = now;
 
-      const elapsedTime = (performance.now() - lastTime) / 1000;
+      const elapsedTime = now / 1000;
       bgUniforms.uTime.value = elapsedTime;
       gridUniforms.uTime.value = elapsedTime;
       starUniforms.uTime.value = elapsedTime;
@@ -319,6 +329,7 @@ export function ThreeBackground() {
       cancelAnimationFrame(animationFrameId);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      document.removeEventListener("visibilitychange", handleVisibility);
 
       scrollTrigger.kill();
       starfieldScroll.scrollTrigger?.kill();

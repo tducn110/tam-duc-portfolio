@@ -26,6 +26,7 @@ npm-debug.log*
 # Coverage
 coverage/
 .vercel
+.codegraph/
 lighthouse-report*.json
 test-page*.js
 create_model.py

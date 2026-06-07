@@ -28,7 +28,7 @@ export function RefractorScene() {
 
     // ─── Renderer ────────────────────────────────────────────────────────
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.25));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setClearColor(COLORS.base, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -451,9 +451,51 @@ export function RefractorScene() {
 
     // ─── ANIMATION LOOP ──────────────────────────────────────────────────
     let animFrameId = 0;
+    let running = false;
+    let inViewport = false;
+    let hidden = document.hidden;
     const clock = new THREE.Clock();
 
-    const animate = () => {
+    const stopAnimation = () => {
+      running = false;
+      if (animFrameId) cancelAnimationFrame(animFrameId);
+      animFrameId = 0;
+    };
+
+    const startAnimation = () => {
+      if (running || hidden || !inViewport) return;
+      running = true;
+      animFrameId = requestAnimationFrame(animate);
+    };
+
+    const handleVisibility = () => {
+      hidden = document.hidden;
+      if (hidden) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
+    };
+    document.addEventListener("visibilitychange", handleVisibility);
+
+    const viewportObserver = new IntersectionObserver(
+      ([entry]) => {
+        inViewport = entry.isIntersecting;
+        if (inViewport) {
+          startAnimation();
+        } else {
+          stopAnimation();
+        }
+      },
+      { rootMargin: "240px" }
+    );
+    viewportObserver.observe(container);
+
+    function animate() {
+      if (hidden || !inViewport) {
+        running = false;
+        return;
+      }
       animFrameId = requestAnimationFrame(animate);
 
       const elapsed = clock.getElapsedTime();
@@ -481,13 +523,15 @@ export function RefractorScene() {
 
       camera.lookAt(0, 0.5, 0);
       renderer.render(scene, camera);
-    };
+    }
 
-    animate();
+    startAnimation();
 
     // ─── CLEANUP ─────────────────────────────────────────────────────────
     return () => {
-      cancelAnimationFrame(animFrameId);
+      stopAnimation();
+      viewportObserver.disconnect();
+      document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
 

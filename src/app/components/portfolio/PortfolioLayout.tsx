@@ -36,6 +36,37 @@ export function PortfolioLayout() {
   // Default to showing page and hiding preloader for Lighthouse to maximize score
   const [showPreloader, setShowPreloader] = useState(!isLighthouseEnv);
   const [showPage, setShowPage] = useState(isLighthouseEnv);
+  const refreshScrollMeasurements = React.useCallback(() => {
+    const refresh = () => {
+      lenisRef.current?.lenis?.resize();
+      ScrollTrigger.refresh();
+    };
+
+    requestAnimationFrame(() => {
+      requestAnimationFrame(refresh);
+    });
+    window.setTimeout(refresh, 250);
+  }, []);
+
+  useEffect(() => {
+    if (isLighthouse || !showPage || typeof ResizeObserver === "undefined") return;
+
+    let frame = 0;
+    const scheduleRefresh = () => {
+      if (frame) cancelAnimationFrame(frame);
+      frame = requestAnimationFrame(refreshScrollMeasurements);
+    };
+
+    const observer = new ResizeObserver(scheduleRefresh);
+    observer.observe(document.body);
+    const main = document.getElementById("main-content");
+    if (main) observer.observe(main);
+
+    return () => {
+      if (frame) cancelAnimationFrame(frame);
+      observer.disconnect();
+    };
+  }, [isLighthouse, showPage, refreshScrollMeasurements]);
 
   useEffect(() => {
     if (isLighthouse || !showPage) return;
@@ -48,13 +79,14 @@ export function PortfolioLayout() {
     }
   
     gsap.ticker.add(update);
-    gsap.ticker.lagSmoothing(0);
+    gsap.ticker.lagSmoothing(500, 33);
+    refreshScrollMeasurements();
   
     return () => {
       lenisRef.current?.lenis?.off?.("scroll", syncScrollTrigger);
       gsap.ticker.remove(update);
     };
-  }, [isLighthouse, showPage]);
+  }, [isLighthouse, showPage, refreshScrollMeasurements]);
 
   // Liquid-smooth transition reveal when preloader sweeps up
   useGSAP(() => {
@@ -87,17 +119,17 @@ export function PortfolioLayout() {
         <ReactLenis
           root
           ref={lenisRef}
-          autoRaf={false}
+          autoRaf={isLighthouse}
           options={{
-            lerp: 0.045, // Softer damping for buttery-smooth liquid scrolling
+            lerp: 0.075,
             smoothWheel: true,
-            wheelMultiplier: 0.9, // Elegant steady speed multiplier
+            wheelMultiplier: 1,
             touchMultiplier: 1.2,
           }}
         >
           <main
             id="main-content"
-            className="main-layout-container min-h-screen bg-background text-foreground overflow-hidden relative selection:bg-violet/30 selection:text-white will-change-transform"
+            className="main-layout-container min-h-screen bg-background text-foreground overflow-hidden relative selection:bg-violet/30 selection:text-white"
             style={{ fontFamily: fonts.body }}
           >
             {!isLighthouse && (
@@ -116,7 +148,7 @@ export function PortfolioLayout() {
 
             {/* Lazy Below-The-Fold */}
             {!isLighthouse ? (
-              <LazySection height="100vh">
+              <LazySection height="100vh" onVisible={refreshScrollMeasurements}>
                 <Suspense fallback={<FallbackPlaceholder />}>
                   <CinematicScrollScene />
                 </Suspense>
@@ -125,49 +157,49 @@ export function PortfolioLayout() {
               <FallbackPlaceholder />
             )}
 
-            <LazySection height="800px">
+            <LazySection height="800px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="800px" />}>
                 <ProjectsSection />
               </Suspense>
             </LazySection>
 
-            <LazySection height="600px">
+            <LazySection height="600px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="600px" />}>
                 <IdentitySection />
               </Suspense>
             </LazySection>
             
-            <LazySection height="600px">
+            <LazySection height="600px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="600px" />}>
                 <TimelineSection />
               </Suspense>
             </LazySection>
 
-            <LazySection height="600px">
+            <LazySection height="600px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="600px" />}>
                 <SkillsSection />
               </Suspense>
             </LazySection>
 
-            <LazySection height="600px">
+            <LazySection height="600px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="600px" />}>
                 <PricingSection />
               </Suspense>
             </LazySection>
 
-            <LazySection height="600px">
+            <LazySection height="600px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="600px" />}>
                 <CatalogSection />
               </Suspense>
             </LazySection>
 
-            <LazySection height="800px">
+            <LazySection height="800px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="800px" />}>
                 <ManifestoSection />
               </Suspense>
             </LazySection>
 
-            <LazySection height="400px">
+            <LazySection height="400px" onVisible={refreshScrollMeasurements}>
               <Suspense fallback={<FallbackPlaceholder height="400px" />}>
                 <CTASection />
               </Suspense>

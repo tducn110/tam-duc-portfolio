@@ -40,7 +40,7 @@ export function ScrollSceneCanvas({ triggerRef, disabled = false }: ScrollSceneC
     camera.position.set(0, 0.1, 7.5);
 
     const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.5));
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 1.15));
     renderer.setSize(container.clientWidth, container.clientHeight);
     renderer.setClearColor(COLORS.base, 0);
     renderer.outputColorSpace = THREE.SRGBColorSpace;
@@ -154,7 +154,7 @@ export function ScrollSceneCanvas({ triggerRef, disabled = false }: ScrollSceneC
     const scrollTrigger = ScrollTrigger.create({
       trigger: triggerRef.current,
       start: "top top",
-      end: "+=260%",
+      end: "+=220%",
       scrub: 1,
       pin: true,
       pinType: "transform",
@@ -167,9 +167,9 @@ export function ScrollSceneCanvas({ triggerRef, disabled = false }: ScrollSceneC
     const renderScene = new RenderPass(scene, camera);
     const bloomPass = new UnrealBloomPass(
       new THREE.Vector2(container.clientWidth, container.clientHeight),
-      1.2, // strength
-      0.6, // radius
-      0.6  // threshold
+      0.72, // strength
+      0.38, // radius
+      0.72  // threshold
     );
     const composer = new EffectComposer(renderer);
     composer.addPass(renderScene);
@@ -178,14 +178,14 @@ export function ScrollSceneCanvas({ triggerRef, disabled = false }: ScrollSceneC
     const copyItems = gsap.utils.toArray<HTMLElement>(
       triggerRef.current.querySelectorAll(".flight-copy")
     );
-    gsap.set(copyItems, { autoAlpha: 0, y: 34, filter: "blur(12px)" });
-    gsap.set(copyItems[0], { autoAlpha: 1, y: 0, filter: "blur(0px)" });
+    gsap.set(copyItems, { autoAlpha: 0, y: 28 });
+    gsap.set(copyItems[0], { autoAlpha: 1, y: 0 });
 
     const copyTimeline = gsap.timeline({
       scrollTrigger: {
         trigger: triggerRef.current,
         start: "top top",
-        end: "+=260%",
+        end: "+=220%",
         scrub: 0.8,
       },
     });
@@ -200,14 +200,13 @@ export function ScrollSceneCanvas({ triggerRef, disabled = false }: ScrollSceneC
         .to(copyItems[index - 1], {
           autoAlpha: 0,
           y: -28,
-          filter: "blur(12px)",
           duration: 0.32,
           ease: "power2.inOut",
         })
         .fromTo(
           item,
-          { autoAlpha: 0, y: 34, filter: "blur(12px)" },
-          { autoAlpha: 1, y: 0, filter: "blur(0px)", duration: 0.42, ease: "power3.out" },
+          { autoAlpha: 0, y: 28 },
+          { autoAlpha: 1, y: 0, duration: 0.42, ease: "power3.out" },
           ">-=0.02"
         )
         .to({}, { duration: 0.44 });
@@ -232,14 +231,35 @@ export function ScrollSceneCanvas({ triggerRef, disabled = false }: ScrollSceneC
     const clock = new THREE.Clock();
     let frame = 0;
     let hidden = document.hidden;
+    let running = false;
+
+    const stopAnimation = () => {
+      running = false;
+      if (frame) cancelAnimationFrame(frame);
+      frame = 0;
+    };
+
+    const startAnimation = () => {
+      if (running || hidden) return;
+      running = true;
+      frame = requestAnimationFrame(animate);
+    };
+
     const handleVisibility = () => {
       hidden = document.hidden;
-      if (!hidden) frame = requestAnimationFrame(animate);
+      if (hidden) {
+        stopAnimation();
+      } else {
+        startAnimation();
+      }
     };
     document.addEventListener("visibilitychange", handleVisibility);
 
     function animate() {
-      if (hidden) return;
+      if (hidden) {
+        running = false;
+        return;
+      }
       frame = requestAnimationFrame(animate);
       const elapsed = clock.getElapsedTime();
       ship.position.y += Math.sin(elapsed * 1.2) * 0.0009;
@@ -250,10 +270,10 @@ export function ScrollSceneCanvas({ triggerRef, disabled = false }: ScrollSceneC
       camera.lookAt(0, 0, 0);
       composer.render();
     }
-    animate();
+    startAnimation();
 
     return () => {
-      cancelAnimationFrame(frame);
+      stopAnimation();
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
       document.removeEventListener("visibilitychange", handleVisibility);

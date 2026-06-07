@@ -2,6 +2,7 @@ import React, { useState, useRef } from "react";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
+import { useLenis } from "lenis/react";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -17,6 +18,7 @@ const navItems = [
 export function FloatingNav() {
   const container = useRef<HTMLDivElement>(null);
   const [active, setActive] = useState("root");
+  const lenis = useLenis();
 
   useGSAP(() => {
     // Show/hide based on scroll
@@ -51,14 +53,25 @@ export function FloatingNav() {
   }, { scope: container });
 
   const scrollTo = (id: string) => {
+    const target = id === "root" ? 0 : document.getElementById(id);
+
+    if (lenis && target !== null) {
+      lenis.scrollTo(target, {
+        offset: id === "root" ? 0 : -80,
+        duration: 1.05,
+      });
+      return;
+    }
+
     if (id === "root") {
       window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
+
     const element = document.getElementById(id);
     if (element) {
       window.scrollTo({
-        top: element.offsetTop,
+        top: element.offsetTop - 80,
         behavior: "smooth"
       });
     }

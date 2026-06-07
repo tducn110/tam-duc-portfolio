@@ -1,6 +1,14 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export function LazySection({ children, height = "100vh" }: { children: React.ReactNode, height?: string }) {
+export function LazySection({
+  children,
+  height = "100vh",
+  onVisible,
+}: {
+  children: React.ReactNode;
+  height?: string;
+  onVisible?: () => void;
+}) {
   const [isVisible, setIsVisible] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
 
@@ -9,10 +17,11 @@ export function LazySection({ children, height = "100vh" }: { children: React.Re
       ([entry]) => {
         if (entry.isIntersecting) {
           setIsVisible(true);
+          onVisible?.();
           observer.disconnect();
         }
       },
-      { rootMargin: "200px" } // Load slightly before it comes into view
+      { rootMargin: "1800px 0px" } // Mount early so Lenis can measure the expanded page before users reach it
     );
 
     if (ref.current) {
